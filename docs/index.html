@@ -9,27 +9,28 @@
     <!-- Primary Meta Tags -->
     <title>Welcome</title>
     <meta name="title" content="Welcome">
-    <meta name="description" content="This is a paragraph." />
+    <meta name="description" content="p8086 is the pre-processor for 8086. You can think of it as a new language which is similar to a lot of high level languages like C/C" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://akshat-oke.github.io/p8086/">
     <meta property="og:title" content="Welcome">
-    <meta property="og:description" content="This is a paragraph.">
+    <meta property="og:description" content="p8086 is the pre-processor for 8086. You can think of it as a new language which is similar to a lot of high level languages like C/C">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://akshat-oke.github.io/p8086/">
     <meta property="twitter:title" content="Welcome">
-    <meta property="twitter:description" content="This is a paragraph.">
+    <meta property="twitter:description" content="p8086 is the pre-processor for 8086. You can think of it as a new language which is similar to a lot of high level languages like C/C">
     
     <script>(function () { var el = document.documentElement, m = localStorage.getItem("/p8086/doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
-    <link href="/p8086/resources/css/retype.css?v=1.11.2.697654455991" rel="stylesheet" data-turbo-track="reload" />
+    <link href="/p8086/resources/css/retype.css?v=1.11.2.697660056531" rel="stylesheet" data-turbo-track="reload" />
 
-    <script type="text/javascript" src="/p8086/resources/js/config.js?v=1.11.2.697654455991" defer data-turbo-track="reload"></script>
+    <script type="text/javascript" src="/p8086/resources/js/config.js?v=1.11.2.697660056531" defer data-turbo-track="reload"></script>
     <script type="text/javascript" src="/p8086/resources/js/retype.js?v=1.11.2" defer data-turbo-track="reload"></script>
-    <script id="lunr-js" type="text/javascript" src="/p8086/resources/js/lunr.js?v=1.11.2.697654455991" defer></script>
+    <script id="lunr-js" type="text/javascript" src="/p8086/resources/js/lunr.js?v=1.11.2.697660056531" defer></script>
+    <script id="prism-js" type="text/javascript" src="/p8086/resources/js/prism.js?v=1.11.2.697660056531" defer></script>
 </head>
     <body>
         <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
@@ -170,46 +171,84 @@
         <span>Welcome</span>
     </h1>
 </doc-anchor-target>
-<p>This is a paragraph.</p>
-<p>Both <a href="README.md">internal</a> and <a href="https://example.com">external</a> links work.</p>
-<p>Another paragraph with <strong>bold</strong>, <em>italic</em>, <del>strikethrough</del>, and <code v-pre>code</code> samples.</p>
-<hr />
-<doc-anchor-target id="lists">
+<p><code v-pre>p8086</code> is the pre-processor for 8086. You can think of it as a new language which is similar to a lot of high level languages like C/C++/Java.</p>
+<doc-anchor-target id="what-does-it-do">
     <h2>
-        <doc-anchor-trigger class="header-anchor-trigger" to="#lists">#</doc-anchor-trigger>
-        <span>Lists</span>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#what-does-it-do">#</doc-anchor-trigger>
+        <span>What does it do?</span>
     </h2>
 </doc-anchor-target>
-<ul>
-<li>First item</li>
-<li>Second item</li>
-<li>Third item</li>
-</ul>
-<ol>
-<li>First item</li>
-<li>Second item</li>
-<li>Third item</li>
-</ol>
+<p>Your code written in <code v-pre>p8086</code> will &quot;compile&quot; to standard 8086 instructions like <code v-pre>MOV</code> or <code v-pre>JMP</code>. You can then pass on this code to the assembler and see how it executes it calmly and precisely as you will hope.</p>
+<doc-anchor-target id="example">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#example">#</doc-anchor-trigger>
+        <span>Example</span>
+    </h2>
+</doc-anchor-target>
+<p>Here is a quick example of a code in <code v-pre>p8086</code> to determine whether a number is even or odd.</p>
+<div class="codeblock-wrapper"><doc-codeblock line-numbers>
+<div class="codeblock-title">Odd or Even</div>
+<pre class="language-clike"><code v-pre class="language-clike">db num = 24; //input
+if(num%2 == 0){
+  print &quot;Even&quot;;
+} else {
+  print &quot;Odd&quot;;
+}
+end</code></pre>
+</doc-codeblock></div>
+<p>This code will compile to the following 8086 Assembly Language:</p>
+<div class="codeblock-wrapper"><doc-codeblock line-numbers>
+<div class="codeblock-title">Compiled code</div>
+<pre class="language-nasm"><code v-pre class="language-nasm">.MODEL SMALL
+.STACK 500H
+.DATA
+num DB 24
+strEven DB &quot;Even$&quot;
+strOdd DB &quot;Odd$&quot;
+.CODE
+PUSH AX
+DIV NUM
+CMP AH, 00
+JNZ IF1_else
+  PUSH DX
+  PUSH AX
+  MOV DX, OFFSET strEven
+  MOV AH, 09
+  INT 21H
+  POP AX
+  POP DX
+  JMP IF1_out
+IF1_else:
+  PUSH DX
+  PUSH AX
+  MOV DX, OFFSET strOdd
+  MOV AH, 09
+  INT 21H
+  POP AX
+  POP DX
+IF1_out:
+.EXIT
+END</code></pre>
+</doc-codeblock></div>
+<p>Woah! That&#x27;s <em>a lot</em> of assembly for just <code v-pre>7</code> lines of <code v-pre>p8086</code>! This is because...</p>
+<doc-anchor-target id="surprise">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#surprise">#</doc-anchor-trigger>
+        <span>Surprise!</span>
+    </h2>
+</doc-anchor-target>
+<p><code v-pre>p8086</code> is designed to be <strong>unobtrusive</strong> with any other statements in the code.</p>
 <blockquote>
-<p>&quot;Cool! This is a quotation.&quot;</p>
+<p>Any valid 8086 instruction is also a valid <code v-pre>p8086</code> instruction!
+This means you can use <code v-pre>p8086</code> for just a small part of your original 8086 program, or vice versa!</p>
 </blockquote>
-<div class="flex mb-6">
-    <div class="flex-shrink-0 w-1 rounded-tl rounded-bl bg-blue-500 dark:bg-blue-400"></div>
-    <div class="flex w-full py-4 border border-l-0 border-gray-300 rounded-tr rounded-br doc-alert bg-white dark:bg-dark-700 dark:border-dark-700" role="alert">
-        <div class="flex items-center ml-4 h-7">
-            <svg xmlns="http://www.w3.org/2000/svg" class="mb-px text-blue-500 dark:text-blue-400" width="22" height="22" viewBox="0 0 24 24" role="presentation">
-                <g fill="currentColor"><g>
-                    <path d="M12 1C5.93 1 1 5.93 1 12s4.93 11 11 11 11-4.93 11-11S18.07 1 12 1zm0 20c-4.96 0-9-4.04-9-9s4.04-9 9-9 9 4.04 9 9-4.04 9-9 9z"></path>
-                    <path d="M12 11c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1s1-.45 1-1v-4c0-.55-.45-1-1-1zM12.01 7c-.56 0-1 .45-1 1s.45 1 1 1 1-.45 1-1-.45-1-1-1z"></path>
-                    <path fill="none" d="M0 0h24v24H0z"></path>
-                </g></g>
-            </svg>
-        </div>
-        <div class="pr-5 ml-3">
-<p>Need to draw attention to something? Use an alert.</p>
-        </div>
-    </div>
-</div>
+<doc-anchor-target id="lets-go">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#lets-go">#</doc-anchor-trigger>
+        <span>Let&#x27;s go!</span>
+    </h2>
+</doc-anchor-target>
+<p>Ready to use <code v-pre>p8086</code>? Head on to learn the syntax from <a href="types.md">the next page</a> right away!</p>
 
 
 
@@ -224,10 +263,10 @@
     </div>
 
     <div class="w-1/2">
-        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-all md:break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-l rounded-r-lg transition-colors duration-150 relative hover:z-5" href="/p8086/hello/">
+        <a class="px-5 py-4 -mx-px h-full flex items-center justify-end break-all md:break-normal font-medium text-blue-500 dark:text-blue-400 border border-gray-300 hover:border-gray-400 dark:border-dark-650 dark:hover:border-dark-450 rounded-l rounded-r-lg transition-colors duration-150 relative hover:z-5" href="/p8086/constants/">
             <span>
                 <span class="block text-xs font-normal text-right text-gray-400 dark:text-dark-400">Next</span>
-                <span class="block mt-1">Hello</span>
+                <span class="block mt-1">Constants</span>
             </span>
             <svg xmlns="http://www.w3.org/2000/svg" class="ml-3" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" overflow="visible"><path d="M19.92 12.38a1 1 0 00-.22-1.09l-7-7a.996.996 0 10-1.41 1.41l5.3 5.3H5c-.55 0-1 .45-1 1s.45 1 1 1h11.59l-5.29 5.29a.996.996 0 000 1.41c.19.2.44.3.7.3s.51-.1.71-.29l7-7c.09-.09.16-.21.21-.33z" /><path fill="none" d="M0 0h24v24H0z" /></svg>
         </a>
@@ -274,6 +313,6 @@
 
         <div id="docs-overlay-target"></div>
 
-        <script>window.__DOCS__ = { "title": "Welcome", icon: "file", hasPrism: false, hasMermaid: false, hasMath: false }</script>
+        <script>window.__DOCS__ = { "title": "Welcome", icon: "file", hasPrism: true, hasMermaid: false, hasMath: false }</script>
     </body>
 </html>

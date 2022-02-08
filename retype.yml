@@ -1,4 +1,4 @@
-input: ./docs-md
+input: docs-md
 output: docs
 branding:
   title: p8086
