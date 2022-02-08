@@ -1,5 +1,6 @@
-input: ./docs
-output: docs/rendered
+input: ./docs-md
+output: docs
 branding:
   title: p8086
   label: Docs
+url: https://akshat-oke.github.io/p8086/
