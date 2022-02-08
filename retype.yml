@@ -1,0 +1,5 @@
+input: ./docs
+output: docs/rendered
+branding:
+  title: p8086
+  label: Docs
