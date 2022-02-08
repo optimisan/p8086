@@ -3,4 +3,10 @@ output: docs
 branding:
   title: p8086
   label: Docs
+links:
+  - text: GitHub
+    link: https://github.com/Akshat-Oke/p8086/
+    icon: mark-github
 url: https://akshat-oke.github.io/p8086/
+footer:
+  copyright: "Developed by Akshat."

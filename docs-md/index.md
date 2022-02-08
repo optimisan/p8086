@@ -14,14 +14,16 @@ Your code written in `p8086` will "compile" to standard 8086 instructions like `
 
 Here is a quick example of a code in `p8086` to determine whether a number is even or odd.
 
-```clike # Odd or Even
+```cpp # Odd or Even
+/* A sample program in p8086
+*/
 db num = 24; //input
 if(num%2 == 0){
-  print "Even";
+  print "Even"; // very simple
 } else {
   print "Odd";
 }
-end
+end; // see 'Statements' for more info
 ```
 
 This code will compile to the following 8086 Assembly Language:
@@ -59,15 +61,21 @@ IF1_out:
 END
 ```
 
-Woah! That's _a lot_ of assembly for just `7` lines of `p8086`! This is because...
+Woah! That's _a lot_ of assembly for just `7` lines of `p8086`! This is because of...
 
-## Surprise!
+## Unobtrusiveness
 
 `p8086` is designed to be **unobtrusive** with any other statements in the code.
+
+Every statement is thus independent of others.
+
+In the above code, since the `print` statement needed to use registers `DX` and `AX`, it saves them to the stack and restores them afterwards.
+
+Do tell me if there is a simpler way of doing this!
 
 > Any valid 8086 instruction is also a valid `p8086` instruction!
 > This means you can use `p8086` for just a small part of your original 8086 program, or vice versa!
 
 ## Let's go!
 
-Ready to use `p8086`? Head on to learn the syntax from [the next page](types.md) right away!
+Ready to use `p8086`? Head on to learn the syntax from [the next page](constants.md) right away!
