@@ -10,27 +10,10 @@
   <body>
     <textarea name="a" id="code" cols="30" rows="10"></textarea>
     <pre id="output"></pre>
-    <button onclick="compile()">Compile</button>
+    <button id="compile">Compile</button>
     <!-- https://github.com/antonmedv/codejar -->
-    <script src="grammar.js"></script>
-    <script src="actions.js"></script>
-    <script>
-      const dataDeclarations = [];
-      const instructions = [];
-      const outputDiv = document.getElementById("output");
-      const codeText = document.getElementById("code");
-      const p8086 = ohm.grammar(grammar);
-      const s = p8086.createSemantics();
-      s.addOperation("eval", actions);
-      function compile() {
-        const matchResult = p8086.match(codeText.value);
-        if (matchResult.succeeded()) {
-          s(matchResult).eval();
-        } else {
-          outputDiv.innerHTML = matchResult.message;
-          console.error(matchResult.message);
-        }
-      }
-    </script>
+    <script type="module" src="./grammar.js"></script>
+    <script type="module" src="./actions.js"></script>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>

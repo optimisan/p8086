@@ -30,6 +30,16 @@ These include [assignments](variables.md#initialising-and-assigning) which were 
 
 Others are function calls and print statements.
 
+### Postfix Statements
+
+These are the postfix increment and decrement operators;
+
+```cpp
+var g = 6;
+g++;//INC G
+g--;//DEC G
+```
+
 ### Print statement
 
 `p8086` provides a simple construct to print to the screen easily.
