@@ -137,12 +137,16 @@ const variableActions = {
   },
   MovShortcut(lv, _, rv) {
     const lvalue = lv.eval();
-    const rvalue = rv.eval();
+    let rvalue = rv.eval();
     console.log("lv", lvalue)
     if (lvalue.type == Types.ea && rvalue.type == Types.ea) {
       throwError(`At '${this.sourceString}': Both values are memory addresses.`)
     }
-    INSTRUCTIONS.push(`MOV ${lv.sourceString}, ${rv.sourceString}`);
+    const c = checkTypes(this.sourceString, lvalue, rvalue, true);
+    if (c) {
+      rvalue = castVarTo(rvalue, c);
+    }
+    INSTRUCTIONS.push(`MOV ${lv.sourceString}, ${rvalue.value}`);
   },
   PrefixExpression(operator, lvalue) {
     const value = lvalue.eval();
@@ -216,7 +220,7 @@ function getBinaryExprCompiled(a, b, operator) {
         |   | 
     */
   if (valueA.type != valueB.type) {
-    throwError("Incompatible types");
+    // throwError("Incompatible types");
   }
   const compiled = [
     `; ${operator}`,
@@ -275,6 +279,9 @@ const constantActions = {
     const str = `"${s.sourceString}$"`;
     return new Value(Types.string, str, getExprInstr(str));
   },
+  pStringLiteral(_, s, __) {
+    DATA_DECLARATIONS.push(`${s.sourceString} DB "${s.sourceString}$"`);
+  },
   LValue(l) {
     // console.log(l.sourceString);
     return l.eval();
@@ -285,7 +292,8 @@ const constantActions = {
   },
   register(r) {
     let type = Types.db;
-    if (r.sourceString.contains("X")) type = Types.dw;
+    console.log("r", r);
+    if (r.sourceString?.includes("X")) type = Types.dw;
     return new Value(type, r.sourceString, "");
   },
 }
@@ -356,12 +364,18 @@ function getExprInstr(node) {
  * @param {Value} rv rvalue
  * @returns To which type rvalue should be casted to
  */
-function checkTypes(m, lv, rv) {
+function checkTypes(m, lv, rv, strict) {
+  console.log("checking", lv, rv);
+  if (strict && (registerRegex.test(lv.value) || registerRegex.test(rv.value))) {
+    lv.type = "REG_" + lv.type;
+    rv.type = "REG_" + rv.type;
+  }
   if (lv.type != rv.type) {
     if (lv.type == Types.dw || rv.type == Types.db) {
       return Types.dw;
     }
-    throwError(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
+    // throwError(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
+    warn(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
   }
 }
 function checkVar(name) {
@@ -390,4 +404,4 @@ function castVarTo(variable, typeToCastTo) {
 }
 const decimalRegex = /[0-9]+/ig;
 const hexRegex = /[A-F0-9]+H/ig;
-// const registerRegex = /ax|bx|cx|dx|al|bl|Cl|Dl|ah|bh|ch|dh|si|di|/g;
+const registerRegex = /ax|bx|cx|dx|al|bl|Cl|Dl|ah|bh|ch|dh|si|di|/g;

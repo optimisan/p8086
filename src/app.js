@@ -5,10 +5,25 @@ const editor = document.querySelector("#editor");
 let jar = CodeJar(editor, (e) => {
   // e.innerHTML = theCodeHTML;
 });
-jar.updateCode(`dw a;
-a = 2+4-(3);
-a = -2;
-MOV DX, a;
+jar.updateCode(`dw a = 13;
+a = a+1-4;
+
+//if else
+
+if(a==10){
+	AX:=1;
+	DEC CX; // 8086 allowed
+	b = 3; // what's b? (see warning)
+} else{
+	AX := 0;
+}
+//while loop
+
+db c = 3;
+while(c != 0){
+	--c;
+	++AX;
+}
 end;`)
 let code = jar.toString();
 editor.addEventListener("keyup", () => {

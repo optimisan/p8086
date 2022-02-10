@@ -15,7 +15,7 @@ p8086 {
 
   ShortcutStatement = MovShortcut
   
-  MovShortcut = LValue ":=" LValue
+  MovShortcut = LValue ":=" (LValue | numberLiteral)
 
   BlockStatement = (EmptyStatement | IfStatement | IterationStatement) ";"?
   
@@ -97,11 +97,14 @@ p8086 {
   PrintExpression = "(" PrintExpression ")" --paren
                   | constantLiteral
                   | MemoryAddress
+                  | pStringLiteral
 
   MemoryAddress = "[" effectiveAddress "]"
 
   constantLiteral (expression for print)
-              = identifier | immediateValue | stringLiteral
+              = identifier | immediateValue //| stringLiteral
+
+  pStringLiteral = "\"" stringCharacter+ "\""
 
   assignmentOperator = "="| "+=" | "-=" | "&=" | "|="
 
@@ -122,7 +125,7 @@ p8086 {
   space += comment
   comment = multiLineComment | singleLineComment
   multiLineComment = "/*" (~"*/" any)* "*/"
-  singleLineComment = "//" (~lineTerminator any)* lineTerminator
+  singleLineComment = "//" (~lineTerminator any)* (lineTerminator | end)
   lineTerminator = "\n" | "\r"
 
   typeName = db | dw | var | string
