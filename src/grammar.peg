@@ -5,15 +5,26 @@ p8086 {
   Statement (a p8086 statement) = SCStatement | BlockStatement
   SCStatement= ( VariableStatement
               | AssignmentExpression
-              | PostfixExpression
+              | ShortcutStatement
+              | PrefixExpression
               | PrintStatement
               | EndStatement
               | FunctionCallExpression
               //|EmptyStatement 
               ) ";" //IterationStmt | IfStatement | Continue, break, 
 
-  BlockStatement = (EmptyStatement | IfStatement) ";"?
+  ShortcutStatement = MovShortcut
   
+  MovShortcut = LValue ":=" LValue
+
+  BlockStatement = (EmptyStatement | IfStatement | IterationStatement) ";"?
+  
+  IterationStatement = WhileStatement | ForStatement
+  
+    ForStatement = for "("  ForStatExpr? ";"? ConditionExpr? ";"+ ForStatExpr? ")" Block
+
+  ForStatExpr = VariableStatement | AssignmentExpression | Masm86Instruction  | EmptyStatement | PrefixExpression
+
   EmptyStatement = ";"
   
   FunctionCallExpression = FName Arguments
@@ -22,12 +33,14 @@ p8086 {
 
   Arguments = "(" ListOf<LValue, ","> ")"
 
+  WhileStatement = while ConditionExpr Block
+
   IfStatement = if ConditionExpr Block (else Block)?
 
   ConditionExpr = "(" ConditionalExpression ")" --paren 
                 | ConditionalExpression
 
-  Block = Statement | "{" Program "}" --block
+  Block = Instruction | "{" Program "}" --block
 
   ConditionalExpression = LValue conditionalOperator RValue
 
@@ -47,13 +60,13 @@ p8086 {
 
   PrintStatement (print statement) = print #(space* ~space) PrintExpression
 
-  PostfixExpression (operation statement) = LValue #(space* ~space "++")
-                    | LValue #(space* ~space "--")
+  PrefixExpression (operation statement) = ("++" | "--" ) LValue //#(space* ~space "++")
+                    //| LValue #(space* ~space "--")
 
   AssignmentExpression (assignment expression)
                   = LValue assignmentOperator AssignRight //AssignmentExpression 
              
-  AssignRight = AssignmentExpression | RValue
+  AssignRight (rvalue) = AssignmentExpression | RValue
   
   LValue = register | identifier | MemoryAddress
   
@@ -90,7 +103,7 @@ p8086 {
   constantLiteral (expression for print)
               = identifier | immediateValue | stringLiteral
 
-  assignmentOperator = "=" | ":=" | "+=" | "-=" | "&=" | "|="
+  assignmentOperator = "="| "+=" | "-=" | "&=" | "|="
 
   immediateValue = numberLiteral | characterLiteral
 

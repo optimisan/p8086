@@ -24,12 +24,20 @@
         background-color: #0e161f;
         color: white;
         height: 100vh;
-        display: flex;
-        flex-direction: column;
         padding: 0;
         margin: 0;
+        padding-top: 48px;
+      }
+      div.body {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
       }
       header {
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
         background-color: #1c2834;
         box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%),
           0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
@@ -46,6 +54,7 @@
       header div.title {
         /* font-family: "Open Sans", Roboto, sans-serif; */
         font-size: 21px;
+        margin-right: 12px;
       }
       #editor-wrapper {
         position: relative;
@@ -75,6 +84,7 @@
       main {
         font-family: "Roboto Mono", monospace;
         font-size: 14px;
+        padding-top: 62px;
         display: flex;
         flex-direction: row;
         height: 100%;
@@ -206,40 +216,56 @@
       #output {
         outline: none;
       }
+      a,
+      a:visited {
+        color: white;
+        text-decoration: none;
+      }
+      header div.link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 7px;
+      }
     </style>
   </head>
   <body>
-    <header>
-      <div class="title">p8086 - Try it out!</div>
-    </header>
-    <!-- <textarea name="a" id="code" cols="30" rows="10"></textarea>
-    <pre id="output"></pre>
-    <button id="compile">Compile</button> -->
-    <main>
-      <div id="editor-wrapper">
-        <button id="compile">
-          <i class="material-icons"> arrow_right </i>Compile
-        </button>
-        <div id="editor">var a = 1;</div>
-      </div>
-      <div id="displayed">
-        <div id="output-wrapper" class="custom-scrollbar">
-          <div class="label">Compiled</div>
-          <div
-            id="output"
-            contenteditable="true"
-            class="custom-scrollbar"
-          ></div>
+    <div class="body">
+      <header>
+        <div class="title">p8086 - Try it out!</div>
+        <div class="link">
+          <i class="material-icons">code</i><a href="#!">GitHub</a>
         </div>
-        <div id="logs-wrapper">
-          <div class="label">Logs</div>
-          <div id="logs" class="custom-scrollbar" style="margin-top: 20px">
-            <pre id="errors" style="color: red"></pre>
-            <pre id="warnings" style="color: #5f7eed"></pre>
+      </header>
+      <!-- <textarea name="a" id="code" cols="30" rows="10"></textarea>
+      <pre id="output"></pre>
+      <button id="compile">Compile</button> -->
+      <main>
+        <div id="editor-wrapper">
+          <button id="compile">
+            <i class="material-icons"> arrow_right </i>Compile
+          </button>
+          <div id="editor">var a = 1;</div>
+        </div>
+        <div id="displayed">
+          <div id="output-wrapper" class="custom-scrollbar">
+            <div class="label">Compiled</div>
+            <div
+              id="output"
+              contenteditable="true"
+              class="custom-scrollbar"
+            ></div>
+          </div>
+          <div id="logs-wrapper">
+            <div class="label">Logs</div>
+            <div id="logs" class="custom-scrollbar" style="margin-top: 20px">
+              <pre id="errors" style="color: red"></pre>
+              <pre id="warnings" style="color: #5f7eed"></pre>
+            </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
     <!-- https://github.com/antonmedv/codejar -->
     <script src="https://unpkg.com/custom-syntax-highlighter@latest/bin/index.js"></script>
     <script>

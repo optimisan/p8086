@@ -6,7 +6,7 @@ p8086 {
   SCStatement= ( VariableStatement
               | AssignmentExpression
               | ShortcutStatement
-              | PostfixExpression
+              | PrefixExpression
               | PrintStatement
               | EndStatement
               | FunctionCallExpression
@@ -17,8 +17,14 @@ p8086 {
   
   MovShortcut = LValue ":=" LValue
 
-  BlockStatement = (EmptyStatement | IfStatement) ";"?
+  BlockStatement = (EmptyStatement | IfStatement | IterationStatement) ";"?
   
+  IterationStatement = WhileStatement | ForStatement
+  
+    ForStatement = for "("  ForStatExpr? ";"? ConditionExpr? ";"+ ForStatExpr? ")" Block
+
+  ForStatExpr = VariableStatement | AssignmentExpression | Masm86Instruction  | EmptyStatement | PrefixExpression
+
   EmptyStatement = ";"
   
   FunctionCallExpression = FName Arguments
@@ -27,12 +33,14 @@ p8086 {
 
   Arguments = "(" ListOf<LValue, ","> ")"
 
+  WhileStatement = while ConditionExpr Block
+
   IfStatement = if ConditionExpr Block (else Block)?
 
   ConditionExpr = "(" ConditionalExpression ")" --paren 
                 | ConditionalExpression
 
-  Block = Statement | "{" Program "}" --block
+  Block = Instruction | "{" Program "}" --block
 
   ConditionalExpression = LValue conditionalOperator RValue
 
@@ -52,8 +60,8 @@ p8086 {
 
   PrintStatement (print statement) = print #(space* ~space) PrintExpression
 
-  PostfixExpression (operation statement) = LValue #(space* ~space "++")
-                    | LValue #(space* ~space "--")
+  PrefixExpression (operation statement) = ("++" | "--" ) LValue //#(space* ~space "++")
+                    //| LValue #(space* ~space "--")
 
   AssignmentExpression (assignment expression)
                   = LValue assignmentOperator AssignRight //AssignmentExpression 

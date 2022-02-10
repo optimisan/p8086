@@ -1,4 +1,4 @@
-import { INSTRUCTIONS, restoreRegisters, throwError, useRegisters, ifNum, ifNumInc } from "./actions.js";
+import { INSTRUCTIONS, restoreRegisters, throwError, useRegisters, ifNum, ifNumInc, iterNum, iterNumInc } from "./actions.js";
 /** Maps each operator to a JUMP mnemonic
  * This checks for the inverted condition,
  * so that it will skip the true condition block.
@@ -14,6 +14,20 @@ const JMPmapNeg = {
   ">": "JBE",
   ">=": "JB",
 }
+const iterativeActions = {
+  WhileStatement(_, condExpr, block) {
+    iterNumInc();
+    const label = `while${iterNum}`;
+    INSTRUCTIONS.push(label + ":"); // while0: ;start loop
+    const { jumpCommand } = condExpr.eval(); // CMP ;condition 
+    INSTRUCTIONS.push(`${jumpCommand} ${label}out`); // JZ while0out
+    block.eval(); // inside statements
+    INSTRUCTIONS.push(
+      `JMP ${label}`,// JMP while0 ;go back above
+      `${label}out:`,
+    );
+  }
+}
 export const blockActions = {
   BlockStatement(b, s) {
     b.eval();
@@ -28,7 +42,7 @@ export const blockActions = {
     const { jumpCommand } = condExpr.eval();
     INSTRUCTIONS.push(`${jumpCommand} ${label}`);
     block.eval();
-    console.log("elseBLock", elseBlock);
+    // console.log("elseBLock", elseBlock);
     INSTRUCTIONS.push(`JMP ${label}out`, `${label}:`);
     elseBlock.eval();
     INSTRUCTIONS.push(`${label}out:`);
@@ -52,7 +66,7 @@ export const blockActions = {
     }
     // restoreRegisters("AX");
     return { lvalue, operator, jumpCommand: jmpCmd };
-  }
+  },
   // EmptyStatement(_){},
-
+  ...iterativeActions,
 }

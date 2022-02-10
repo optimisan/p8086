@@ -25,12 +25,12 @@
     
     <script>(function () { var el = document.documentElement, m = localStorage.getItem("/p8086/doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
-    <link href="/p8086/resources/css/retype.css?v=1.11.2.697660676693" rel="stylesheet" data-turbo-track="reload" />
+    <link href="/p8086/resources/css/retype.css?v=1.11.2.697827969212" rel="stylesheet" data-turbo-track="reload" />
 
-    <script type="text/javascript" src="/p8086/resources/js/config.js?v=1.11.2.697660676693" defer data-turbo-track="reload"></script>
+    <script type="text/javascript" src="/p8086/resources/js/config.js?v=1.11.2.697827969212" defer data-turbo-track="reload"></script>
     <script type="text/javascript" src="/p8086/resources/js/retype.js?v=1.11.2" defer data-turbo-track="reload"></script>
-    <script id="lunr-js" type="text/javascript" src="/p8086/resources/js/lunr.js?v=1.11.2.697660676693" defer></script>
-    <script id="prism-js" type="text/javascript" src="/p8086/resources/js/prism.js?v=1.11.2.697660676693" defer></script>
+    <script id="lunr-js" type="text/javascript" src="/p8086/resources/js/lunr.js?v=1.11.2.697827969212" defer></script>
+    <script id="prism-js" type="text/javascript" src="/p8086/resources/js/prism.js?v=1.11.2.697827969212" defer></script>
 </head>
     <body>
         <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
@@ -220,6 +220,18 @@ end;</code></pre>
 </doc-anchor-target>
 <p>These include <a href="../variables/#initialising-and-assigning">assignments</a> which were covered in the <a href="../variables/">Variables</a> page.</p>
 <p>Others are function calls and print statements.</p>
+<doc-anchor-target id="postfix-statements">
+    <h3>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#postfix-statements">#</doc-anchor-trigger>
+        <span>Postfix Statements</span>
+    </h3>
+</doc-anchor-target>
+<p>These are the postfix increment and decrement operators;</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-cpp"><code v-pre class="language-cpp">var g = 6;
+g++;//INC G
+g--;//DEC G</code></pre>
+</doc-codeblock></div>
 <doc-anchor-target id="print-statement">
     <h3>
         <doc-anchor-trigger class="header-anchor-trigger" to="#print-statement">#</doc-anchor-trigger>

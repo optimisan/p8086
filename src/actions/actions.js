@@ -7,10 +7,14 @@ const variables = {};
 /** Number of if statements
  *  @type {number} */
 export let ifNum = 0;
-export function getIfNum() { return ifNum };
 export function ifNumInc() {
   ++ifNum;
-  // console.log(ifNum);
+}
+/** Number of iterative statements
+ *  @type {number} */
+export let iterNum = 0;
+export function iterNumInc() {
+  ++iterNum;
 }
 import { blockActions } from "./block_actions.js";
 export function resetProg() {
@@ -139,6 +143,16 @@ const variableActions = {
       throwError(`At '${this.sourceString}': Both values are memory addresses.`)
     }
     INSTRUCTIONS.push(`MOV ${lv.sourceString}, ${rv.sourceString}`);
+  },
+  PrefixExpression(operator, lvalue) {
+    const value = lvalue.eval();
+    console.log(value);
+    if (value.type == Types.ea) {
+      throwError(`[At '${this.sourceString}'] ${lvalue.sourceString} is not a valid lvalue`);
+      return;
+    }
+    let command = operator.sourceString == "++" ? "INC" : "DEC";
+    INSTRUCTIONS.push(command + " " + lvalue.sourceString);
   }
 }
 /** Enum for binary expressions operators */
@@ -352,7 +366,7 @@ function checkTypes(m, lv, rv) {
 }
 function checkVar(name) {
   if (!variables[name]) {
-    console.info("[Warning]" + name + "not defined");
+    console.info("[Warning] " + name + " not defined");
     warn("'" + name + "' not defined");
     return { value: null, name, type: /ax|bx/ig.test(name) ? Types.reg : Types.all }
   }
