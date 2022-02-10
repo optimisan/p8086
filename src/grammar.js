@@ -2,13 +2,41 @@ export const grammar = String.raw`
 p8086 { 
   Program = Instruction*
   Instruction = Statement | Masm86Instruction // | Declaration
-  Statement (a p8086 statement) = ( VariableStatement
+  Statement (a p8086 statement) = SCStatement | BlockStatement
+  SCStatement= ( VariableStatement
               | AssignmentExpression
+              | ShortcutStatement
               | PostfixExpression
               | PrintStatement
               | EndStatement
-              | ";" 
+              | FunctionCallExpression
+              //|EmptyStatement 
               ) ";" //IterationStmt | IfStatement | Continue, break, 
+
+  ShortcutStatement = MovShortcut
+  
+  MovShortcut = LValue ":=" LValue
+
+  BlockStatement = (EmptyStatement | IfStatement) ";"?
+  
+  EmptyStatement = ";"
+  
+  FunctionCallExpression = FName Arguments
+
+  FName = identifier ("." identifier)*
+
+  Arguments = "(" ListOf<LValue, ","> ")"
+
+  IfStatement = if ConditionExpr Block (else Block)?
+
+  ConditionExpr = "(" ConditionalExpression ")" --paren 
+                | ConditionalExpression
+
+  Block = Statement | "{" Program "}" --block
+
+  ConditionalExpression = LValue conditionalOperator RValue
+
+  conditionalOperator = "=="|"!="|"==="|"!=="|"<"|"<="|">"|">="
   
   EndStatement = endP
   
@@ -30,7 +58,7 @@ p8086 {
   AssignmentExpression (assignment expression)
                   = LValue assignmentOperator AssignRight //AssignmentExpression 
              
-  AssignRight = AssignmentExpression | RValue
+  AssignRight (rvalue) = AssignmentExpression | RValue
   
   LValue = register | identifier | MemoryAddress
   
@@ -67,7 +95,7 @@ p8086 {
   constantLiteral (expression for print)
               = identifier | immediateValue | stringLiteral
 
-  assignmentOperator = "=" | "+=" | "-=" | "&=" | "|="
+  assignmentOperator = "="| "+=" | "-=" | "&=" | "|="
 
   immediateValue = numberLiteral | characterLiteral
 
@@ -132,7 +160,9 @@ p8086 {
 
   aDirective (a valid 8086 directive) = (caseInsensitive<"END"> | caseInsensitive<"MODEL"> | caseInsensitive<"STACK"> | caseInsensitive<"CODE"> | caseInsensitive<"STARTUP"> | caseInsensitive<"DATA"> | caseInsensitive<"EXIT">) ~identifierPart
 
-  MasmCommand (an 8086 command)  = masmCommands ListOf<identifier?, ",">
+  MasmCommand (an 8086 command)  = masmCommands ListOf<masmArgument, "," > //# (~lineTerminator ~end any)*//ListOf<identifier?, ("," | " ")>
+
+  masmArgument = (alnum| " ")+
 
   masmCommands = ("END" | caseInsensitive<"AAA"> | caseInsensitive<"AAD"> | caseInsensitive<"AAM"> | caseInsensitive<"AAS"> | caseInsensitive<"ADC"> | caseInsensitive<"ADD"> | caseInsensitive<"AND"> | caseInsensitive<"CALL"> | caseInsensitive<"CBW"> | caseInsensitive<"CLC"> | caseInsensitive<"CLD"> | caseInsensitive<"CLI"> | caseInsensitive<"CMC"> | caseInsensitive<"CMP"> | caseInsensitive<"CMPSB"> | caseInsensitive<"CMPSW"> | caseInsensitive<"CWD"> | caseInsensitive<"DAA"> | caseInsensitive<"DAS"> | caseInsensitive<"DEC"> | caseInsensitive<"DIV"> | caseInsensitive<"HLT"> | caseInsensitive<"IDIV"> | caseInsensitive<"IMUL"> | caseInsensitive<"IN"> | caseInsensitive<"INC"> | caseInsensitive<"INT"> | caseInsensitive<"INTO"> | caseInsensitive<"IRET"> | caseInsensitive<"JA"> | caseInsensitive<"JAE"> | caseInsensitive<"JB"> | caseInsensitive<"JBE"> | caseInsensitive<"JC"> | caseInsensitive<"JCXZ"> | caseInsensitive<"JE"> | caseInsensitive<"JG"> | caseInsensitive<"JGE"> | caseInsensitive<"JL"> | caseInsensitive<"JLE"> | caseInsensitive<"JMP"> | caseInsensitive<"JNA"> | caseInsensitive<"JNAE"> | caseInsensitive<"JNB"> | caseInsensitive<"JNBE"> | caseInsensitive<"JNC"> | caseInsensitive<"JNE"> | caseInsensitive<"JNG">
   | caseInsensitive<"JNGE"> | caseInsensitive<"JNL"> | caseInsensitive<"JNLE"> | caseInsensitive<"JNO"> | caseInsensitive<"JNP"> | caseInsensitive<"JNS"> | caseInsensitive<"JNZ"> | caseInsensitive<"JO"> | caseInsensitive<"JP"> | caseInsensitive<"JPE"> | caseInsensitive<"JPO"> | caseInsensitive<"JS"> | caseInsensitive<"JZ"> | caseInsensitive<"LAHF"> | caseInsensitive<"LDS"> | caseInsensitive<"LEA"> | caseInsensitive<"LES"> | caseInsensitive<"LODSB"> | caseInsensitive<"LODSW"> | caseInsensitive<"LOOP"> | caseInsensitive<"LOOPE"> | caseInsensitive<"LOOPNE"> | caseInsensitive<"LOOPNZ"> | caseInsensitive<"LOOPZ"> | caseInsensitive<"MOV"> | caseInsensitive<"MOVSB"> | caseInsensitive<"MOVSW"> | caseInsensitive<"MUL"> | caseInsensitive<"NEG"> | caseInsensitive<"NOP"> | caseInsensitive<"NOT"> | caseInsensitive<"OR"> | caseInsensitive<"OUT"> | caseInsensitive<"POP"> | caseInsensitive<"POPA"> | caseInsensitive<"POPF"> | caseInsensitive<"PUSH"> | caseInsensitive<"PUSHA"> | caseInsensitive<"PUSHF"> | caseInsensitive<"RCL"> | caseInsensitive<"RCR"> | caseInsensitive<"REP"> | caseInsensitive<"REPE"> | caseInsensitive<"REPNE"> | caseInsensitive<"REPNZ"> | caseInsensitive<"REPZ"> | caseInsensitive<"RET"> | caseInsensitive<"RETF"> | caseInsensitive<"ROL"> | caseInsensitive<"ROR"> | caseInsensitive<"SAHF"> | caseInsensitive<"SAL"> | caseInsensitive<"SAR"> | caseInsensitive<"SBB"> | caseInsensitive<"SCASB"> | caseInsensitive<"SCASW"> | caseInsensitive<"SHL"> | caseInsensitive<"SHR"> | caseInsensitive<"STC"> | caseInsensitive<"STD"> | caseInsensitive<"STI"> | caseInsensitive<"STOSB"> | caseInsensitive<"STOSW"> | caseInsensitive<"SUB"> | caseInsensitive<"TEST"> | caseInsensitive<"XCHG"> | caseInsensitive<"XLATB"> | caseInsensitive<"XOR">) ~identifierPart

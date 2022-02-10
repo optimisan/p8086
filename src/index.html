@@ -5,48 +5,173 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script src="https://unpkg.com/ohm-js/dist/ohm.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.0/split.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&family=Roboto+Mono&display=swap");
+      html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      pre {
+        white-space: pre-line;
+      }
       body {
-        background-color: black;
+        background-color: #0e161f;
         color: white;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        margin: 0;
+      }
+      header {
+        background-color: #1c2834;
+        box-shadow: 0px 2px 4px -1px rgb(0 0 0 / 20%),
+          0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
+        min-height: 48px;
+        display: flex;
+        font-family: "Roboto", sans-serif;
+        padding: 5px 24px;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        z-index: 4;
+        user-select: none;
+      }
+      header div.title {
+        /* font-family: "Open Sans", Roboto, sans-serif; */
+        font-size: 21px;
+      }
+      #editor-wrapper {
+        position: relative;
+        padding: 0;
+        height: 98%;
+        margin: 0;
       }
       #editor {
-        border-radius: 6px;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-          0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
-        font-family: "Source Code Pro", monospace;
-        background-color: rgb(4, 4, 51);
+        user-select: contain;
+        /* border-radius: 6px; */
+        /* box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), */
+        /* 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2); */
+        /* font-family: "Source Code Pro", monospace; */
         color: white;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 400;
-        height: 340px;
+        /* height: 340px; */
+        height: 90%;
+        margin: 0;
         letter-spacing: normal;
         line-height: 20px;
         padding: 10px;
+        margin-left: 7px;
         tab-size: 2;
+        border-left: 2px solid rgb(70, 69, 69);
       }
       main {
+        font-family: "Roboto Mono", monospace;
+        font-size: 14px;
         display: flex;
         flex-direction: row;
+        height: 100%;
+        width: 100%;
       }
-      main > div#editor {
+      #displayed div {
+        /* width: 100%; */
+        margin: 0;
+        position: relative;
+        /* overflow: auto; */
+        font-family: "Roboto Mono", monospace;
+        user-select: contain;
+      }
+      pre {
+        font-family: "Roboto Mono", monospace;
+      }
+
+      /* main > div#editor {
         flex: 0.5;
-      }
+      } */
       .fn-call {
         color: green;
       }
       #hidden {
         display: none;
       }
-      button {
+      #displayed {
+        display: flex;
+        flex-direction: column;
+      }
+      button#compile {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Open Sans", Roboto, sans-serif;
+        position: absolute;
+        top: 0;
+        right: 5px;
         margin: 10px auto;
         outline: none;
         border-radius: 5px;
-        background-color: black;
-        color: white;
-        padding: 7px 9px;
-        border: 2px solid white;
+        font-size: 13px;
+        background-color: #168afd;
+        color: black;
+        padding: 5px 12px;
+        border: none;
+      }
+      button:hover {
+        cursor: pointer;
+      }
+      i.material-icons {
+        margin-left: -5px;
+        margin-right: 1px;
+      }
+
+      .label {
+        user-select: none;
+        display: block;
+        font-size: 14px;
+        font-family: "Roboto", sans-serif !important;
+        color: #909090;
+        position: absolute;
+        top: 8px;
+        left: 9px;
+      }
+      .label ~ div {
+        /* padding-top: 20px; */
+        margin-top: 8px;
+        position: relative;
+        overflow: auto;
+        height: 95%;
+        user-select: contain;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        -webkit-appearance: none;
+        width: 9px;
+        height: 9px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-corner {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background-color: #909090;
+        border-radius: 4px;
+      }
+      .gutter {
+        background-color: #1c2834;
+        background-repeat: no-repeat;
+        background-position: 50%;
+        margin-left: 0;
+        margin-right: 0;
+      }
+      .gutter:hover {
+        cursor: col-resize;
+      }
+      .gutter-vertical:hover {
+        cursor: row-resize;
       }
       .center {
         text-align: center;
@@ -57,23 +182,64 @@
           display: block;
         }
       }
+      #logs pre {
+        padding-left: 8px;
+        position: relative;
+      }
+      pre#errors::before {
+        content: "Errors";
+        margin-bottom: 5px;
+        position: relative;
+        display: block;
+        clear: both;
+        top: 0;
+        left: 0;
+      }
+      pre#warnings::before {
+        content: "Warnings";
+        display: block;
+        clear: both;
+        position: relative;
+        top: 0;
+        left: 0;
+      }
+      #output {
+        outline: none;
+      }
     </style>
   </head>
   <body>
     <header>
-      <h2>p8086 - Try it out!</h2>
+      <div class="title">p8086 - Try it out!</div>
     </header>
     <!-- <textarea name="a" id="code" cols="30" rows="10"></textarea>
     <pre id="output"></pre>
     <button id="compile">Compile</button> -->
     <main>
-      <div id="editor">var a = 1;</div>
-      <pre id="output"></pre>
+      <div id="editor-wrapper">
+        <button id="compile">
+          <i class="material-icons"> arrow_right </i>Compile
+        </button>
+        <div id="editor">var a = 1;</div>
+      </div>
+      <div id="displayed">
+        <div id="output-wrapper" class="custom-scrollbar">
+          <div class="label">Compiled</div>
+          <div
+            id="output"
+            contenteditable="true"
+            class="custom-scrollbar"
+          ></div>
+        </div>
+        <div id="logs-wrapper">
+          <div class="label">Logs</div>
+          <div id="logs" class="custom-scrollbar" style="margin-top: 20px">
+            <pre id="errors" style="color: red"></pre>
+            <pre id="warnings" style="color: #5f7eed"></pre>
+          </div>
+        </div>
+      </div>
     </main>
-    <div class="center">
-      <button id="compile">Compile</button>
-    </div>
-    <pre id="hidden"><code></code></pre>
     <!-- https://github.com/antonmedv/codejar -->
     <script src="https://unpkg.com/custom-syntax-highlighter@latest/bin/index.js"></script>
     <script>
@@ -97,9 +263,23 @@
           },
         ],
       });
+      var range = document.createRange();
+      range.selectNode(document.getElementById("output"));
+      window.getSelection().addRange(range);
     </script>
-    <script type="module" src="./grammar.js"></script>
-    <script type="module" src="./actions.js"></script>
+    <!-- <script type="module" src="./grammar.js"></script>
+    <script type="module" src="./actions.js"></script> -->
+    <script src="https://unpkg.com/ohm-js/dist/ohm.min.js"></script>
+    <script>
+      Split(["#editor-wrapper", "#displayed"], {
+        sizes: [50, 50],
+      });
+      Split(["#output-wrapper", "#logs-wrapper"], {
+        sizes: [50, 50],
+        direction: "vertical",
+        cursor: "row-resize",
+      });
+    </script>
     <script type="module" src="./app.js"></script>
   </body>
 </html>
