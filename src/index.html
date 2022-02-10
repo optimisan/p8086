@@ -6,12 +6,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="https://unpkg.com/ohm-js/dist/ohm.min.js"></script>
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+      #editor {
+        border-radius: 6px;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+          0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        font-family: "Source Code Pro", monospace;
+        background-color: rgb(4, 4, 51);
+        color: white;
+        font-size: 14px;
+        font-weight: 400;
+        height: 340px;
+        letter-spacing: normal;
+        line-height: 20px;
+        padding: 10px;
+        tab-size: 2;
+      }
+      main {
+        display: flex;
+        flex-direction: row;
+      }
+      main > div#editor {
+        flex: 0.5;
+      }
+      .fn-call {
+        color: green;
+      }
+      #hidden {
+        display: none;
+      }
+      button {
+        margin: 10px auto;
+        outline: none;
+        border-radius: 5px;
+        background-color: black;
+        color: white;
+        padding: 7px 9px;
+        border: 2px solid white;
+      }
+      .center {
+        text-align: center;
+      }
+      @media screen and (max-width: 500px) {
+        main {
+          /* flex-direction: column; */
+          display: block;
+        }
+      }
+    </style>
   </head>
   <body>
-    <textarea name="a" id="code" cols="30" rows="10"></textarea>
+    <header>
+      <h2>p8086 - Try it out!</h2>
+    </header>
+    <!-- <textarea name="a" id="code" cols="30" rows="10"></textarea>
     <pre id="output"></pre>
-    <button id="compile">Compile</button>
+    <button id="compile">Compile</button> -->
+    <main>
+      <div id="editor">var a = 1;</div>
+      <pre id="output"></pre>
+    </main>
+    <div class="center">
+      <button id="compile">Compile</button>
+    </div>
+    <pre id="hidden"><code></code></pre>
     <!-- https://github.com/antonmedv/codejar -->
+    <script src="https://unpkg.com/custom-syntax-highlighter@latest/bin/index.js"></script>
+    <script>
+      var highlight = window.csHighlight;
+      let theCodeHTML = "";
+      highlight({
+        selector: "pre#hidden code",
+        postProcess: (str) => {
+          theCodeHTML = str;
+          document.querySelector("#editor").innerHTML = str;
+          return str;
+        },
+        patterns: [
+          {
+            name: "string",
+            match: /^(\'[^\'\n]*\')/,
+          },
+          {
+            name: "fn-call",
+            match: [/^([A-z_]+)\(/, "", "("],
+          },
+        ],
+      });
+    </script>
     <script type="module" src="./grammar.js"></script>
     <script type="module" src="./actions.js"></script>
     <script type="module" src="./app.js"></script>

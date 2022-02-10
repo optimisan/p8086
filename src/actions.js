@@ -1,8 +1,8 @@
 // import { DATA_DECLARATIONS } from "./app.js";
 export const DATA_DECLARATIONS = [];
 export const INSTRUCTIONS = []
+export const errors = [];
 const variables = {};
-const errors = [];
 // Enum Types
 /**
  * @enum
@@ -165,7 +165,7 @@ function getUnaryExprCompiled(e, operator) {
     default:
       break;
   }
-  INSTRUCTIONS.push(compiled);
+  INSTRUCTIONS.push(...compiled);
   return value;
 }
 function getBinaryExprCompiled(a, b, operator) {
@@ -183,6 +183,7 @@ function getBinaryExprCompiled(a, b, operator) {
     throwError("Incompatible types");
   }
   const compiled = [
+    `; ${operator}`,
     "POP BX",
     "POP AX",
   ]
@@ -209,7 +210,7 @@ function getBinaryExprCompiled(a, b, operator) {
       break;
   }
   compiled.push("PUSH AX");
-  INSTRUCTIONS.push(compiled);
+  INSTRUCTIONS.push(...compiled);
   return valueA;
 }
 
@@ -262,7 +263,7 @@ export const actions = {
  * Throw an error
  * @param {string} e Error message
  */
-function throwError(e) {
+function throwError(e, panic) {
   errors.push(e);
 }
 /**
