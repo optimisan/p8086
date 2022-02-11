@@ -1,8 +1,8 @@
 export const grammar = String.raw`
 p8086 { 
   Program = Instruction*
-  Instruction = Statement | Masm86Instruction // | Declaration
-  Statement (a p8086 statement) = SCStatement | BlockStatement
+  Instruction = Masm86Instruction | Statement // | Declaration
+  Statement (a p8086 statement) = BlockStatement |SCStatement 
   SCStatement= ( VariableStatement
               | AssignmentExpression
               | ShortcutStatement
@@ -15,15 +15,15 @@ p8086 {
 
   ShortcutStatement = MovShortcut
   
-  MovShortcut = LValue ":=" LValue
+  MovShortcut = LValue ":=" (LValue | numberLiteral)
 
   BlockStatement = (EmptyStatement | IfStatement | IterationStatement) ";"?
   
   IterationStatement = WhileStatement | ForStatement
   
-    ForStatement = for "("  ForStatExpr? ";"? ConditionExpr? ";"+ ForStatExpr? ")" Block
+  ForStatement = for "("  ForStatExpr?  ConditionExpr? ";"+ ForStatExpr? ")" Block
 
-  ForStatExpr = VariableStatement | AssignmentExpression | Masm86Instruction  | EmptyStatement | PrefixExpression
+  ForStatExpr (asd) = (VariableStatement | AssignmentExpression | Masm86Instruction  | PrefixExpression) ";"
 
   EmptyStatement = ";"
   
@@ -42,9 +42,9 @@ p8086 {
 
   Block = Instruction | "{" Program "}" --block
 
-  ConditionalExpression = LValue conditionalOperator RValue
+  ConditionalExpression = RValue conditionalOperator RValue //#used to be LValue oper RValue
 
-  conditionalOperator = "=="|"!="|"==="|"!=="|"<"|"<="|">"|">="
+  conditionalOperator = "==="|"!=="|"=="|"!="|"<="|"<"|">="|">"
   
   EndStatement = endP
   
@@ -97,11 +97,14 @@ p8086 {
   PrintExpression = "(" PrintExpression ")" --paren
                   | constantLiteral
                   | MemoryAddress
+                  | pStringLiteral
 
   MemoryAddress = "[" effectiveAddress "]"
 
   constantLiteral (expression for print)
-              = identifier | immediateValue | stringLiteral
+              = identifier | immediateValue //| stringLiteral
+
+  pStringLiteral = "\"" stringCharacter+ "\""
 
   assignmentOperator = "="| "+=" | "-=" | "&=" | "|="
 
@@ -122,7 +125,7 @@ p8086 {
   space += comment
   comment = multiLineComment | singleLineComment
   multiLineComment = "/*" (~"*/" any)* "*/"
-  singleLineComment = "//" (~lineTerminator any)* lineTerminator
+  singleLineComment = "//" (~lineTerminator any)* (lineTerminator | end)
   lineTerminator = "\n" | "\r"
 
   typeName = db | dw | var | string

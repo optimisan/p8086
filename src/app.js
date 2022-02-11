@@ -68,8 +68,26 @@ document.getElementById("compile").addEventListener("click", e => {
   compile();
 })
 function displayErrors() {
-  errorsDiv.innerHTML = errors.join("<br>");
+  // errorsDiv.innerHTML = errors.join("<br>");
+  // errors.
+  let str = "";
+  errors.forEach(error => str += wrapSectionInHref(error));
+  errorsDiv.innerHTML = str;
 }
 function displayWarnings() {
   warningsDiv.innerHTML = warnings.join("<br>");
 }
+/**
+ * Wraps any section references like §1.2.4 with <a> tags
+ * @param {string} str String to process
+ */
+function wrapSectionInHref(str) {
+  str = str.replace(/§(\d+\.)*\d/ig, "<a href='$&'>$&</a>")
+  return str;
+}
+// Ctrl+Enter
+// document.addEventListener('keydown', function (event) {
+//   if (event.ctrlKey && event.key === 'Enter') {
+//     compile();
+//   }
+// });

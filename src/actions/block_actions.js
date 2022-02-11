@@ -1,4 +1,4 @@
-import { INSTRUCTIONS, restoreRegisters, throwError, useRegisters, ifNum, ifNumInc, iterNum, iterNumInc } from "./actions.js";
+import { INSTRUCTIONS, restoreRegisters, throwError, useRegisters, ifNum, ifNumInc, iterNum, iterNumInc, addComment } from "./actions.js";
 /** Maps each operator to a JUMP mnemonic
  * This checks for the inverted condition,
  * so that it will skip the true condition block.
@@ -19,14 +19,41 @@ const iterativeActions = {
     iterNumInc();
     const label = `while${iterNum}`;
     INSTRUCTIONS.push(label + ":"); // while0: ;start loop
-    const { jumpCommand } = condExpr.eval(); // CMP ;condition 
-    INSTRUCTIONS.push(`${jumpCommand} ${label}out`); // JZ while0out
+    const jumpCommand = condExpr.eval(); // CMP ;condition 
+    INSTRUCTIONS.push(`${jumpCommand} ${label}exit`); // JZ while0out
     block.eval(); // inside statements
     INSTRUCTIONS.push(
       `JMP ${label}`,// JMP while0 ;go back above
-      `${label}out:`,
+      `${label}exit:`,
     );
-  }
+  },
+  ForStatement(foR, _,
+    forStatExp, __, condExpr, ___,
+    forStatExp2, ____, block,) {
+    iterNumInc();
+    addComment("for loop");
+    const label = `for${iterNum}`;
+    const exitLabel = `for${iterNum}exit`;
+    forStatExp.eval();
+    INSTRUCTIONS.push(label + ":");
+    const cond = condExpr.eval();
+    console.log("cond", JSON.stringify(cond));
+    // if (!jumpCommand) jumpCommand = "JMP";
+    // if (jumpCommand)
+    INSTRUCTIONS.push(`${cond} ${exitLabel}`);
+    addComment("for body");
+    block.eval();
+    addComment("for 'inc'");
+    forStatExp2.eval();
+    INSTRUCTIONS.push(
+      `JMP ${label}`,
+      `${exitLabel}:`
+    );
+    addComment("for end");
+  },
+  // ForStatExpr(f, _) {
+  //   f.eval();
+  // }
 }
 export const blockActions = {
   BlockStatement(b, s) {
@@ -53,19 +80,23 @@ export const blockActions = {
     return c.eval();
   },
   ConditionalExpression(lv, operator, rv) {
+    console.log(operator);
     // useRegisters("AX");
-    const lvalue = lv.sourceString;
+    const lvalue = lv.eval();//sourceString;
     const rvalue = rv.eval();
     const jmpCmd = JMPmapNeg[operator.sourceString];
+    console.log(jmpCmd);
     INSTRUCTIONS.push(
-      "POP AX",
-      `CMP ${lvalue}, AX`
+      "POP AX", //rvalue here
+      "POP BX", //lvalue here
+      `CMP BX, AX`
     );
     if (!jmpCmd) {
       throwError("Unexpected operator");
     }
     // restoreRegisters("AX");
-    return { lvalue, operator, jumpCommand: jmpCmd };
+    return jmpCmd;
+    // return { lvalue, operator, jumpCommand: jmpCmd };
   },
   // EmptyStatement(_){},
   ...iterativeActions,

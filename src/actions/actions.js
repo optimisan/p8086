@@ -4,6 +4,7 @@ export const INSTRUCTIONS = []
 export const errors = [];
 export const warnings = [];
 const variables = {};
+let simpleMode = false;
 /** Number of if statements
  *  @type {number} */
 export let ifNum = 0;
@@ -22,7 +23,7 @@ export function resetProg() {
     INSTRUCTIONS.length =
     errors.length =
     warnings.length =
-    ifNum = 0;
+    ifNum = iterNum = 0;
 }
 // Enum Types
 const Types = {
@@ -39,8 +40,8 @@ Object.freeze(Types);
 class Variable {
   /**
    * 
-   * @param {string} type 
-   * @param {string} value 
+   * @param {Types} type Type of this variable
+   * @param {string} value Name of identifier
    */
   constructor(type, value) {
     this.type = type;
@@ -88,6 +89,7 @@ const variableActions = {
     // console.log(typeName.sourceString, i.identifier, i.initialiser);
     const dataDeclare = `${i.identifier} ${typeMap[typeName.sourceString]} ${i.initialiser}`;
     DATA_DECLARATIONS.push(dataDeclare);
+    console.log("Found var", Types[typeName.sourceString]);
     variables[i.identifier] = new Variable(Types[typeName.sourceString], i.initialiser);
   },
   Initialiser(_, val) {
@@ -98,7 +100,8 @@ const variableActions = {
     return { identifier: identifier.sourceString, initialiser: init.children.length == 0 ? "?" : init.eval().join("") };
   },
   AssignmentExpression(lValue, assignmentOperator, assignRight) {
-    INSTRUCTIONS.push("PUSH AX", "PUSH BX");
+    useRegisters("AX", "BX");
+    // INSTRUCTIONS.push("PUSH AX", "PUSH BX");
     const lvalue = lValue.eval();
     const lvStr = lvalue.value;
     const operator = assignmentOperator.sourceString;
@@ -108,7 +111,7 @@ const variableActions = {
     console.log("lv", lvalue);
     // AX and BX are not allowed
     if (lvalue.value.toUpperCase() == "AX" | lvalue.value.toUpperCase() == "BX") {
-      throwError(`At '${lvStr + operator}': LValue '${lvStr}' cannot be used because it will be overwritten by the r-expression. Use operator ':=' instead.`)
+      throwError(`[At '${lvStr + operator}']: LValue '${lvStr}' cannot be used because it will be overwritten by the RHS expression. Use the MOVE operator §4.2 ':=' instead.`)
       return;
     }
     const castToDW = checkTypes(operator, lvalue, value);
@@ -123,12 +126,13 @@ const variableActions = {
       default:
         INSTRUCTIONS.push(`POP ${lvalue}`);
     }
-    INSTRUCTIONS.push("POP BX", "POP AX");
+    // INSTRUCTIONS.push("POP BX", "POP AX");
+    restoreRegisters("BX", "AX");
     return value;
   },
   P_LValue(pL) {
     INSTRUCTIONS.push(`PUSH ${pL.sourceString}`);
-    return new Value(Types.db, pL.sourceString, "");
+    return new Value(checkVar(pL.sourceString).type, pL.sourceString, "");
   },
   AssignRight(e) {
     const val = e.eval();
@@ -161,7 +165,7 @@ const variableActions = {
 }
 /** Enum for binary expressions operators */
 const BinaryOperators = {
-  add: "+", sub: "-", mul: "*", div: "/",
+  add: "+", sub: "-", mul: "*", div: "/", mod: "%",
 }
 Object.freeze(BinaryOperators);
 // Temporary variables are already defined in DATA_DECLARATIONS
@@ -181,6 +185,9 @@ const expressionActions = {
   },
   MultiplicativeExpression_div(a, _, b) {
     return getBinaryExprCompiled(a, b, BinaryOperators.div);
+  },
+  MultiplicativeExpression_mod(a, _, b) {
+    return getBinaryExprCompiled(a, b, BinaryOperators.mod);
   },
   UnaryExpression_unaryPlus(_, u) {
     return getUnaryExprCompiled(u, BinaryOperators.add);
@@ -219,8 +226,9 @@ function getBinaryExprCompiled(a, b, operator) {
         | b | <- SP
         |   | 
     */
-  if (valueA.type != valueB.type) {
+  if (valueA.type != Types.dw && valueA.type != Types.all && valueA.type != Types.ea) {
     // throwError("Incompatible types");
+    throwError(`At '${valueA.value + operator}'] LValue ${valueA.value} is 8-bit and cannot be used.`);
   }
   const compiled = [
     `; ${operator}`,
@@ -248,6 +256,15 @@ function getBinaryExprCompiled(a, b, operator) {
       compiled.push(
         "MUL BX",
         // "MOV AX"
+      );
+      break;
+    case BinaryOperators.mod:
+      compiled.push(
+        "PUSH DX",
+        "MOV DX, 0",
+        "DIV BX",
+        "MOV AX, DX",
+        "POP DX",
       );
       break;
     default:
@@ -365,7 +382,7 @@ function getExprInstr(node) {
  * @returns To which type rvalue should be casted to
  */
 function checkTypes(m, lv, rv, strict) {
-  console.log("checking", lv, rv);
+  // console.log("checking", lv, rv);
   if (strict && (registerRegex.test(lv.value) || registerRegex.test(rv.value))) {
     lv.type = "REG_" + lv.type;
     rv.type = "REG_" + rv.type;
@@ -374,11 +391,15 @@ function checkTypes(m, lv, rv, strict) {
     if (lv.type == Types.dw || rv.type == Types.db) {
       return Types.dw;
     }
+    if (lv.type == Types.all || rv.type == Types.all) {
+      return Types.all;
+    }
     // throwError(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
     warn(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
   }
 }
 function checkVar(name) {
+  // console.log("Searching " + name, variables[name]);
   if (!variables[name]) {
     console.info("[Warning] " + name + " not defined");
     warn("'" + name + "' not defined");
@@ -401,6 +422,16 @@ function castVarTo(variable, typeToCastTo) {
     }
   }
   return variable;
+}
+/**
+ * Adds a comment to the compiled instructions
+ * if the option is enabled.
+ * ";" is added at the start as well.
+ * @param {string} c Comment to add
+ */
+export function addComment(c) {
+  //if comments_on
+  INSTRUCTIONS.push(";" + c);
 }
 const decimalRegex = /[0-9]+/ig;
 const hexRegex = /[A-F0-9]+H/ig;

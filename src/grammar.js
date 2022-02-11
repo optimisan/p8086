@@ -21,9 +21,9 @@ p8086 {
   
   IterationStatement = WhileStatement | ForStatement
   
-    ForStatement = for "("  ForStatExpr? ";"? ConditionExpr? ";"+ ForStatExpr? ")" Block
+  ForStatement = for "("  ForStatExpr? ";" ConditionExpr? ";"+ ForStatExpr? ")" Block
 
-  ForStatExpr = VariableStatement | AssignmentExpression | Masm86Instruction  | EmptyStatement | PrefixExpression
+  ForStatExpr = (VariableStatement | AssignmentExpression | Masm86Instruction | PrefixExpression)//? ";"
 
   EmptyStatement = ";"
   
@@ -42,9 +42,9 @@ p8086 {
 
   Block = Instruction | "{" Program "}" --block
 
-  ConditionalExpression = LValue conditionalOperator RValue
+  ConditionalExpression = RValue conditionalOperator RValue
 
-  conditionalOperator = "=="|"!="|"==="|"!=="|"<"|"<="|">"|">="
+  conditionalOperator = "==="|"!=="|"=="|"!="|"<="|"<"|">="|">"
   
   EndStatement = endP
   
