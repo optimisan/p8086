@@ -53,3 +53,30 @@ a = 23H; // assign value
 b = 45; // allowed, but the assembler won't be happy (b is not defined)
 db c = 'c';
 ```
+
+## Strings
+
+Right now no string operations are supported. You can only define them or `print` them.
+
+A string used "on-the-fly" for the `print` statement gets automatically added the `DATA` segment.
+
+> Two equal string literals will _not_ generate two redundant `DATA` declarations!
+
+```clike
+print "abc";
+print "abc";
+```
+
+```nasm Compiled
+.DATA
+str1 DB "abc$"
+.CODE
+PUSH OFFSET str1
+POP DX
+MOV AH, 09
+INT 21H
+PUSH OFFSET str1
+POP DX
+MOV AH, 09
+INT 21H
+```
