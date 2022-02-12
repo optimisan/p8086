@@ -70,8 +70,8 @@ Use one of the shortcut operators instead.
 Takes one operator
 | Operator | Function |
 | -------- | -------------------- |
-|- | Negate the number|
-|! | Also Negates the number|
+| - | Negate the number|
+| ! | Also Negates the number|
 
 !!!
 There is no `+` unary operator because I think it is pointless here.
@@ -121,3 +121,9 @@ if(a==0){
 | %=       | Equivalent to `l=l%r`   |
 | \|=      | Equivalent to `l = l    | r`  |
 | &=       | AND instead of OR above |
+
+## Shortcut operators
+
+Since the above operators will produce `PUSH` and `POP` instructions even for simple assignments like `a=4;`, you can the shortcut operators `:=` or `*:=` instead.
+
+> This will `MOV` left, right
