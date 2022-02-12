@@ -25,12 +25,13 @@
     
     <script>(function () { var el = document.documentElement, m = localStorage.getItem("/p8086/docs/doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
-    <link href="/p8086/docs/resources/css/retype.css?v=1.11.2.697969465386" rel="stylesheet" data-turbo-track="reload" />
+    <link href="/p8086/docs/favicon.ico" rel="icon" />
+    <link href="/p8086/docs/resources/css/retype.css?v=1.11.2.697983826624" rel="stylesheet" data-turbo-track="reload" />
 
-    <script type="text/javascript" src="/p8086/docs/resources/js/config.js?v=1.11.2.697969465386" defer data-turbo-track="reload"></script>
+    <script type="text/javascript" src="/p8086/docs/resources/js/config.js?v=1.11.2.697983826624" defer data-turbo-track="reload"></script>
     <script type="text/javascript" src="/p8086/docs/resources/js/retype.js?v=1.11.2" defer data-turbo-track="reload"></script>
-    <script id="lunr-js" type="text/javascript" src="/p8086/docs/resources/js/lunr.js?v=1.11.2.697969465386" defer></script>
-    <script id="prism-js" type="text/javascript" src="/p8086/docs/resources/js/prism.js?v=1.11.2.697969465386" defer></script>
+    <script id="lunr-js" type="text/javascript" src="/p8086/docs/resources/js/lunr.js?v=1.11.2.697983826624" defer></script>
+    <script id="prism-js" type="text/javascript" src="/p8086/docs/resources/js/prism.js?v=1.11.2.697983826624" defer></script>
 </head>
     <body>
         <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
@@ -46,6 +47,10 @@
         <div class="flex items-center justify-between h-full py-2 md:w-75">
             <div class="flex items-center px-2 md:px-6">
                 <a id="docs-site-logo" href="/p8086/docs/" class="flex items-center leading-snug text-2xl">
+                    <span class="w-10 mr-2 flex-grow-0 flex-shrink-0 overflow-hidden">
+                        <img class="max-h-10 dark:hidden md:inline-block" src="/p8086/docs/logo.png">
+                        <img class="max-h-10 hidden dark:inline-block" src="/p8086/docs/logo.png">
+                    </span>
                     <span class="dark:text-white font-semibold line-clamp-1 md:line-clamp-2">p8086</span>
                 </a><span class="hidden px-2 py-1 ml-4 text-sm font-semibold leading-none text-root-logo-label-text bg-root-logo-label-bg rounded-sm md:inline-block">Docs</span>
             </div>
@@ -351,8 +356,8 @@ Use one of the shortcut operators instead.</p>
 <p>Takes one operator
 | Operator | Function |
 | -------- | -------------------- |
-|- | Negate the number|
-|! | Also Negates the number|</p>
+| - | Negate the number|
+| ! | Also Negates the number|</p>
 <div class="flex mb-6">
     <div class="flex-shrink-0 w-1 rounded-tl rounded-bl bg-blue-500 dark:bg-blue-400"></div>
     <div class="flex w-full py-4 border border-l-0 border-gray-300 rounded-tr rounded-br doc-alert bg-white dark:bg-dark-700 dark:border-dark-700" role="alert">
@@ -473,6 +478,22 @@ To use logical not, use the <code v-pre>!</code> prefix expression instead.</p>
 </tbody>
 </table>
 </div>
+<doc-anchor-target id="shortcut-operators">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#shortcut-operators">#</doc-anchor-trigger>
+        <span>Shortcut operators</span>
+    </h2>
+</doc-anchor-target>
+<p>Since the above operators will produce <code v-pre>PUSH</code> and <code v-pre>POP</code> instructions even for simple assignments like <code v-pre>a=4;</code>, you can the shortcut operators <code v-pre>:=</code> or <code v-pre>*:=</code> instead.</p>
+<blockquote>
+<p>This will compile to <code v-pre>MOV lvalue, rvalue</code> without changing anything.</p>
+</blockquote>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-clike"><code v-pre class="language-clike">a := 5; //MOV a, 5
+b *= 3; // MOV AL, b
+        // IMUL 3
+        // MOV b, AL</code></pre>
+</doc-codeblock></div>
 
 
 

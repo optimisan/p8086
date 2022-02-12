@@ -3,6 +3,7 @@ output: docs
 branding:
   title: p8086
   label: Docs
+  logo: logo.png
 links:
   - text: GitHub
     link: https://github.com/Akshat-Oke/p8086/

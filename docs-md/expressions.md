@@ -126,4 +126,11 @@ if(a==0){
 
 Since the above operators will produce `PUSH` and `POP` instructions even for simple assignments like `a=4;`, you can the shortcut operators `:=` or `*:=` instead.
 
-> This will `MOV` left, right
+> This will compile to `MOV lvalue, rvalue` without changing anything.
+
+```clike
+a := 5; //MOV a, 5
+b *= 3; // MOV AL, b
+        // IMUL 3
+        // MOV b, AL
+```
