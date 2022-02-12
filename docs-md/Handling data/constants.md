@@ -49,19 +49,3 @@ These cannot be used as left hand side expression of a boolean expression.
 var a = 1 + 3;
 var b = a + b;
 ```
-
-## Boolean Expressions
-
-These are, sadly, different from [constant expressions](#constant-expressions), in the sense that they can be only used within conditional statements like `if` or `while`.
-
-```c
-if(a==0){
-  //statements
-}
-// this throws an error because the LHS is a constant expression
-/*
-  if((a+1) == 8){
-
-  }
-*/
-```

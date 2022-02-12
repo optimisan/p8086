@@ -7,6 +7,10 @@ links:
   - text: GitHub
     link: https://github.com/Akshat-Oke/p8086/
     icon: mark-github
+  - text: Compile online
+    link: https://akshat-oke.github.io/p8086/src
+    icon: code-square
+    target: blank
 url: https://akshat-oke.github.io/p8086/docs
 footer:
   copyright: "Developed by Akshat."

@@ -62,3 +62,7 @@ while(34 <= b+a){
 More information can be found on the [statements page](statements.md). `p8086` supports `if else`, `while` and `for` loops
 
 More can be added here but enough for now. Head on to the next page to learn more!
+
+## Examples
+
+Sample programs written in `p8086` can be found in the [online compiler](https://akshat-oke.github.io/p8086/src).

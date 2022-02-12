@@ -1,11 +1,15 @@
-input: .
 output: .retype
-url: # Add your website address here
 branding:
   title: p8086
   label: Docs
 links:
-  - text: Getting Started
-    link: https://retype.com/guides/getting-started/
+  - text: GitHub
+    link: https://github.com/Akshat-Oke/p8086/
+    icon: mark-github
+  - text: Compile online
+    link: https://akshat-oke.github.io/p8086/src
+    icon: code-square
+    target: blank
+url: https://akshat-oke.github.io/p8086/docs
 footer:
-  copyright: "&copy; Copyright {{ year }}. All rights reserved."
+  copyright: "Developed by Akshat."

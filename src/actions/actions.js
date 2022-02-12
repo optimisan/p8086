@@ -25,6 +25,7 @@ export function iterNumInc() {
   ++iterNum;
 }
 import { blockActions } from "./block_actions.js";
+import { stringShortCut } from "./string_actions.js";
 export function resetProg() {
   DATA_DECLARATIONS.length =
     INSTRUCTIONS.length =
@@ -35,7 +36,7 @@ export function resetProg() {
   for (var member in strings) delete strings[member];
 }
 // Enum Types
-const Types = {
+export const Types = {
   all: "ALL",
   ea: "EFFECTIVE_ADDRESS",
   reg: "REG",
@@ -207,6 +208,8 @@ const variableActions = {
     const operator = shortcutOperator.sourceString;
     const lvalue = lv.eval();
     let rvalue = rv.eval();
+    const stringWasHandled = stringShortCut(lvalue, rvalue, operator);
+    if (stringWasHandled) return;
     console.log("lv", lvalue)
     if (lvalue.type == Types.ea && rvalue.type == Types.ea) {
       throwError(`At '${this.sourceString}': Both values are memory addresses.`)

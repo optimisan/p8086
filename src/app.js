@@ -3,8 +3,11 @@ import { actions, DATA_DECLARATIONS, INSTRUCTIONS, errors, resetProg, warnings, 
 import { CodeJar } from "https://medv.io/codejar/codejar.js";
 const editor = document.querySelector("#editor");
 // let jar = CodeJar(editor, Prism.highlightElement);
+///////
 let jar = CodeJar(editor, () => { });
 let code = jar.toString();
+// let jar = new CodeFlask(editor, { language: 'clike' })
+//////////
 editor.addEventListener("keyup", () => {
   code = jar.toString();
   // document.querySelector("pre#hidden code").innerHTML = code;
@@ -25,6 +28,7 @@ function compile() {
   errorsDiv.innerHTML = "";
   warningsDiv.innerHTML = "";
   resetProg();
+  console.log(jar.toString())
   const matchResult = p8086.match(jar.toString());
   if (matchResult.succeeded()) {
     try { s(matchResult).eval(); } catch (e) {

@@ -13,7 +13,7 @@ p8086 {
               //|EmptyStatement 
               ) ";" //IterationStmt | IfStatement | Continue, break, 
 
-  ShortcutStatement = LValue shortcutOperator (LValue | numberLiteral) //MovShortcut
+  ShortcutStatement = LValue shortcutOperator (LValue | numberLiteral)// | pStringLiteral) //MovShortcut
   
   MovShortcut = LValue ":=" (LValue | numberLiteral)
 
@@ -76,8 +76,7 @@ p8086 {
         // | LValue
         // | immediateValue
   
-  PrimaryExpression = "(" PrimaryExpression ")" --paren
-                    | AdditiveExpression
+  PrimaryExpression = AdditiveExpression | "(" PrimaryExpression ")" --paren
 
   AdditiveExpression = AdditiveExpression "+" MultiplicativeExpression -- add
                      | AdditiveExpression "-" MultiplicativeExpression -- sub

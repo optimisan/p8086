@@ -76,6 +76,14 @@ Do tell me if there is a simpler way of doing this!
 > Any valid 8086 instruction is also a valid `p8086` instruction!
 > This means you can use `p8086` for just a small part of your original 8086 program, or vice versa!
 
+## Usage
+
+To use `p8086` simply head on to [the online compiler](https://akshat-oke.github.io/p8086/src) and start coding right away!
+There are two options:
+
+1. **Clean mode** This is to disable unobtrusiveness and prevent verbose `PUSH` and `POP` instructions .
+2. **Disable Comments** By default comments will be added to the compiled assembly which marks the start of a statement being translated from `p8086`. You can remove these comments using this option.
+
 ## Let's go!
 
-Ready to use `p8086`? Head on to learn the syntax from [the next page](constants.md) right away!
+Ready to use `p8086`? Head on to learn the syntax from [the next page](overview.md) right away!

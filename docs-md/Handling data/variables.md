@@ -14,7 +14,7 @@ The data types in `p8086` are actually the same as in 8086. _Type Name_ is what 
 | Type Name | Description | 8086 directive |
 | --------- | ----------- | -------------- |
 | db        | Byte        | DB             |
-| var       | Byte        | DB             |
+| var, int  | Word        | DW             |
 | dw        | Word        | DW             |
 | dd        | Double word | DD             |
 

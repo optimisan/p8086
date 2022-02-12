@@ -1,5 +1,6 @@
 ---
 icon: diff
+order: 799
 ---
 
 # Expressions
@@ -37,6 +38,10 @@ RValues can only occur on the right side of as assignment, and both sides of a c
 a+b/4; // types must match though
 ```
 
+!!! Just a terminology
+RValue expressions are being called as 'constant' expressions here.
+!!!
+
 We can move onto listing the operations available.
 
 ## Arithmetic operators
@@ -47,7 +52,72 @@ Add, subtract, invert, multiply...
 
 Take two operands
 
+| Operator | Function              |
+| -------- | --------------------- |
+| +        | Add                   |
+| -        | Subtract              |
+| %        | Mod, remainder        |
+| /        | Signed multiplication |
+| \*       | Signed division       |
+
+!!! Note
+LHS cannot be registers `AX` or `BX` because these operations use them.
+Use one of the shortcut operators instead.
+!!!
+
+### Unary
+
+Takes one operator
 | Operator | Function |
-| -------- | -------- |
-| +        | Add      |
-| -        | Subtract |
+| -------- | -------------------- |
+|- | Negate the number|
+|! | Also Negates the number|
+
+!!!
+There is no `+` unary operator because I think it is pointless here.
+To use logical not, use the `!` prefix expression instead.
+!!!
+
+## Prefix expressions
+
+Like prefix and postfix operations in other languages, `p8086` only has prefix ones.
+
+> _operator_ **lvalue**
+
+| Operator | Function        |
+| -------- | --------------- |
+| ++       | Increment       |
+| --       | Decrement       |
+| !        | Invert the bits |
+
+## Boolean Expressions
+
+These are, sadly, different from [constant expressions](#rvalue), in the sense that they can be only used within conditional statements like `if` or `while`.
+
+```clike Conditional
+if(a==0){
+  //statements
+}
+// this throws an error because the LHS is a constant expression
+/*
+  if((a+1) == 8){
+
+  }
+*/
+```
+
+> Support for AND, OR, NOT operators might be in future releases. But most likely not. Unless someone volunteers; I am sure someone will!
+
+## Assignment expressions
+
+> Syntax
+> `lvalue operator rvalue`
+
+| Operator | Function                |
+| -------- | ----------------------- | --- |
+| +=       | Add RHS to LHS          |
+| -=       | Subtract                |
+| \*=, /=  | You know them           |
+| %=       | Equivalent to `l=l%r`   |
+| \|=      | Equivalent to `l = l    | r`  |
+| &=       | AND instead of OR above |

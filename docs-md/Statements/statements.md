@@ -30,14 +30,14 @@ These include [assignments](variables.md#initialising-and-assigning) which were 
 
 Others are function calls and print statements.
 
-### Postfix Statements
+### Prefix Statements
 
-These are the postfix increment and decrement operators;
+These are the prefix increment and decrement operators. More info [here.](../expressions.md#prefix-expressions)
 
 ```cpp
 var g = 6;
-g++;//INC G
-g--;//DEC G
+++g;//INC G
+--g;//DEC G
 ```
 
 ### Print statement
@@ -55,6 +55,8 @@ Where `expr` means an expression.
 ### End
 
 The `end` statement is a shortcut to end the program.
+
+> It is not compulsory
 
 ```js p8086
 end;
@@ -85,11 +87,16 @@ if(b!=23){
 
 ### Loop
 
-`p8086` supports the while loop.
+`p8086` supports the while and for loops.
 
 ```cpp
 while (a != 0){
   print "let's go!";
   DEC A;
 }
+for (int i = 0; i < 5; i++){
+  print "Sup";
+}
+print "I'm drinking soup";
+end;
 ```
