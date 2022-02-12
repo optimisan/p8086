@@ -1,30 +1,9 @@
 import { grammar } from "./grammar.js";
-import { actions, DATA_DECLARATIONS, INSTRUCTIONS, errors, resetProg, warnings } from "./actions/actions.js";
+import { actions, DATA_DECLARATIONS, INSTRUCTIONS, errors, resetProg, warnings, setMode, setAddComm } from "./actions/actions.js";
 import { CodeJar } from "https://medv.io/codejar/codejar.js";
 const editor = document.querySelector("#editor");
-let jar = CodeJar(editor, (e) => {
-  // e.innerHTML = theCodeHTML;
-});
-jar.updateCode(`dw a = 13;
-a = a+1-4;
-
-//if else
-
-if(a==10){
-	AX:=1;
-	DEC CX; // 8086 allowed
-	b = 3; // what's b? (see warning)
-} else{
-	AX := 0;
-}
-//while loop
-
-db c = 3;
-while(c != 0){
-	--c;
-	++AX;
-}
-end;`)
+// let jar = CodeJar(editor, Prism.highlightElement);
+let jar = CodeJar(editor, () => { });
 let code = jar.toString();
 editor.addEventListener("keyup", () => {
   code = jar.toString();
@@ -40,6 +19,8 @@ const p8086 = ohm.grammar(grammar);
 const s = p8086.createSemantics();
 s.addOperation("eval", actions);
 function compile() {
+  setMode(document.getElementById('simple-mode').checked);
+  setAddComm(!document.getElementById('add-comments').checked);
   outputDiv.innerHTML = "";
   errorsDiv.innerHTML = "";
   warningsDiv.innerHTML = "";
@@ -63,6 +44,8 @@ function compile() {
     errorsDiv.innerHTML = matchResult.message;
     // console.error(matchResult.message);
   }
+  outputDiv.innerHTML = Prism.highlight(outputDiv.innerHTML.replace(/<br>/g, "\n"), Prism.languages.nasm, "nasm").replace(/\n/g, "<br>");
+  Prism.highlightElement(editor);
 }
 document.getElementById("compile").addEventListener("click", e => {
   compile();
@@ -91,3 +74,50 @@ function wrapSectionInHref(str) {
 //     compile();
 //   }
 // });
+document.getElementById("examples").addEventListener("change", (e) => {
+  jar.updateCode(examples[e.target.value]);
+})
+
+var examples = {
+  "0": `dw a = 13;
+a = a+1-4;
+
+//if else
+
+if(a==10){
+	AX:=1;
+	DEC CX; // 8086 allowed
+	b = 3; // what's b? (see warning)
+} else{
+	AX := 0;
+}
+//while loop
+
+db c = 3;
+while(c != 0){
+	--c;
+	++AX;
+}
+end;`,
+  "1": `print "Hello World!";`,
+
+  "2": `dw a = 15;
+
+if(a%2==0){
+	print "Even!";
+} else {
+	print "Odd!";
+}
+end;`,
+
+  "3": `dw sum = 0;
+dw count = 1;
+
+while(count <= 10){
+	sum += count;
+	++count;
+}
+AX := sum; //store sum
+//numbers cannot be 'printed' yet`,
+}
+jar.updateCode(examples["0"])

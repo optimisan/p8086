@@ -30,6 +30,10 @@ db char = 'S'; // char DB 'S'
 Constant literals are inserted in the `.DATA` segment. All `string` literals used "on-the-fly" (like in the [print statement](statements.md#print-statement)) also go in here.
 !!!
 
+## Registers
+
+To represent 8086 registers like `AX`, `Bl` etc, use **uppercase** only.
+
 ## Constant Expressions
 
 All expressions are constant by default.

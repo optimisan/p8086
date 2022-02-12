@@ -60,13 +60,27 @@ export const blockActions = {
     b.eval();
     // console.log(b, s);
   },
+  PrintStatement(_, __, pe) {
+    pe.eval();
+  },
+  PrintExpression_paren(_, p, __) { p.eval() },
+  PrintExpression(p) {
+    p.eval();
+    INSTRUCTIONS.push(
+      "POP DX",
+      "MOV AH, 09",
+      "INT 21H",
+    );
+  },
+
   Block_block(_, program, __) {
     program.eval();
   },
   IfStatement(_, condExpr, block, __, elseBlock) {
+    addComment(`if ${condExpr.sourceString}`);
     ifNumInc();
     const label = `ifElse${ifNum}`;
-    const { jumpCommand } = condExpr.eval();
+    const jumpCommand = condExpr.eval();
     INSTRUCTIONS.push(`${jumpCommand} ${label}`);
     block.eval();
     // console.log("elseBLock", elseBlock);
@@ -80,8 +94,9 @@ export const blockActions = {
     return c.eval();
   },
   ConditionalExpression(lv, operator, rv) {
-    console.log(operator);
-    // useRegisters("AX");
+    addComment(this.sourceString);
+    // console.log(operator);
+    useRegisters("AX", "BX");
     const lvalue = lv.eval();//sourceString;
     const rvalue = rv.eval();
     const jmpCmd = JMPmapNeg[operator.sourceString];
@@ -94,7 +109,7 @@ export const blockActions = {
     if (!jmpCmd) {
       throwError("Unexpected operator");
     }
-    // restoreRegisters("AX");
+    restoreRegisters("AX", "BX");
     return jmpCmd;
     // return { lvalue, operator, jumpCommand: jmpCmd };
   },

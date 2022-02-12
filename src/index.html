@@ -29,8 +29,13 @@
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="css/toggle.css" />
+    <link rel="stylesheet" href="css/prism.css" />
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Open+Sans&family=Roboto&family=Roboto+Mono&display=swap");
+      * {
+        box-sizing: border-box;
+      }
       html {
         margin: 0;
         padding: 0;
@@ -51,6 +56,7 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+        padding-bottom: 40px;
       }
       header {
         width: 100%;
@@ -62,6 +68,7 @@
           0px 4px 5px 0px rgb(0 0 0 / 14%), 0px 1px 10px 0px rgb(0 0 0 / 12%);
         min-height: 48px;
         display: flex;
+        justify-content: flex-start;
         font-family: "Roboto", sans-serif;
         padding: 5px 24px;
         -ms-flex-align: center;
@@ -91,11 +98,12 @@
         font-size: 16px;
         font-weight: 400;
         /* height: 340px; */
-        height: 90%;
+        height: 80%;
         margin: 0;
         letter-spacing: normal;
         line-height: 20px;
         padding: 10px;
+        padding-bottom: 20px;
         margin-left: 7px;
         tab-size: 2;
         border-left: 2px solid rgb(70, 69, 69);
@@ -103,7 +111,7 @@
       main {
         font-family: "Roboto Mono", monospace;
         font-size: 14px;
-        padding-top: 62px;
+        /* padding-top: 21px; */
         display: flex;
         flex-direction: row;
         height: 100%;
@@ -132,6 +140,7 @@
       }
       #displayed {
         display: flex;
+        /* margin-bottom: 87px; */
         flex-direction: column;
       }
       button#compile {
@@ -141,7 +150,7 @@
         font-family: "Open Sans", Roboto, sans-serif;
         position: absolute;
         top: 0;
-        right: 5px;
+        right: 15px;
         margin: 10px auto;
         outline: none;
         border-radius: 5px;
@@ -159,7 +168,7 @@
         margin-right: 1px;
       }
 
-      .label {
+      .div-label {
         user-select: none;
         display: block;
         font-size: 14px;
@@ -169,7 +178,7 @@
         top: 8px;
         left: 9px;
       }
-      .label ~ div {
+      .div-label ~ div {
         /* padding-top: 20px; */
         margin-top: 8px;
         position: relative;
@@ -240,12 +249,51 @@
         color: white;
         text-decoration: none;
       }
-      header div.link {
+      header .link {
         display: flex;
         align-items: center;
         font-size: 14px;
         justify-content: center;
         margin: 0 10px;
+      }
+      footer {
+        z-index: 4;
+        width: 100%;
+        height: 40px;
+        position: fixed;
+        bottom: 0;
+        left: 0px;
+        background-color: #1c2834;
+        display: flex;
+        align-items: center;
+        padding: 4px 15px;
+        padding-right: 45px;
+      }
+      footer > div {
+        display: flex;
+      }
+      div.about {
+        margin-left: auto;
+      }
+      header select {
+        margin-right: 18px;
+        user-select: none;
+        font-family: Roboto, sans-serif;
+        background-color: transparent;
+        outline: none;
+        border: 1px solid #898989;
+        color: white;
+        border-radius: 4px;
+        font-size: 14px;
+        padding: 5px;
+        /* padding-right: 4px; */
+        margin-left: auto;
+      }
+      header select option {
+        background-color: #0e161f;
+      }
+      footer > div.ml {
+        margin-left: 60px;
       }
     </style>
   </head>
@@ -253,17 +301,34 @@
     <div class="body">
       <header>
         <div class="title">p8086 - Try it out!</div>
-        <div class="link">
-          <i class="material-icons">code</i
-          ><a target="_blank" href="https://github.com/Akshat-Oke/p8086/"
-            >GitHub</a
-          >
+        <a
+          class="link"
+          target="_blank"
+          href="https://github.com/Akshat-Oke/p8086/"
+        >
+          <i class="material-icons">code</i>
+          <div>GitHub</div>
+        </a>
+        <a
+          class="link"
+          target="_blank"
+          href="https://akshat-oke.github.io/p8086/docs"
+        >
+          <i class="material-icons">format_list_bulleted</i>
+          <div>Docs</div>
+        </a>
+        <div class="about">
+          <select id="examples">
+            <option value="0">Examples:</option>
+            <option value="1">Hello World</option>
+            <option value="2">Odd/Even</option>
+            <option value="3">Sum till 10</option>
+          </select>
         </div>
-        <div class="link">
-          <i class="material-icons">format_list_bulleted</i
-          ><a target="_blank" href="https://akshat-oke.github.io/p8086/docs"
-            >Docs</a
-          >
+        <div style="font-size: 14px; text-align: center">
+          UI inpired
+          <div style="height: 6px"></div>
+          by <a href="https://dartpad.dev">Dartpad</a>
         </div>
       </header>
       <!-- <textarea name="a" id="code" cols="30" rows="10"></textarea>
@@ -274,19 +339,26 @@
           <button id="compile">
             <i class="material-icons"> arrow_right </i>Compile
           </button>
-          <div id="editor">var a = 1;</div>
+          <div id="editor" class="custom-scrollbar language-clike">
+            var a = 1;
+          </div>
         </div>
         <div id="displayed">
-          <div id="output-wrapper" class="custom-scrollbar">
-            <div class="label">Compiled</div>
+          <div
+            id="output-wrapper"
+            class="custom-scrollbar"
+            style="padding-top: 2px"
+          >
+            <div class="div-label">Compiled</div>
             <div
               id="output"
               contenteditable="true"
-              class="custom-scrollbar"
+              class="custom-scrollbar language-nasm"
+              style="padding-top: 5px"
             ></div>
           </div>
           <div id="logs-wrapper">
-            <div class="label">Logs</div>
+            <div class="div-label">Logs</div>
             <div id="logs" class="custom-scrollbar" style="margin-top: 20px">
               <pre id="errors" style="color: red"></pre>
               <pre id="warnings" style="color: #5f7eed"></pre>
@@ -295,6 +367,34 @@
         </div>
       </main>
     </div>
+    <footer>
+      <div>
+        Clean mode
+        <div class="toggle-button-cover">
+          <div class="button-cover">
+            <div class="button r" id="button-1">
+              <input type="checkbox" class="checkbox" id="simple-mode" />
+              <div class="knobs"></div>
+              <div class="layer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="width: 8px"></div>
+      <div class="ml">
+        Disable comments
+        <div class="toggle-button-cover">
+          <div class="button-cover">
+            <div class="button r" id="button-1">
+              <input type="checkbox" class="checkbox" id="add-comments" />
+              <div class="knobs"></div>
+              <div class="layer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="about">Developed by Akshat</div>
+    </footer>
     <!-- https://github.com/antonmedv/codejar -->
     <script src="https://unpkg.com/custom-syntax-highlighter@latest/bin/index.js"></script>
     <script>
@@ -325,6 +425,7 @@
     <!-- <script type="module" src="./grammar.js"></script>
     <script type="module" src="./actions.js"></script> -->
     <script src="https://unpkg.com/ohm-js/dist/ohm.min.js"></script>
+    <script src="prism.js"></script>
     <script>
       Split(["#editor-wrapper", "#displayed"], {
         sizes: [50, 50],

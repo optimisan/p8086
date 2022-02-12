@@ -3,8 +3,15 @@ export const DATA_DECLARATIONS = [];
 export const INSTRUCTIONS = []
 export const errors = [];
 export const warnings = [];
+export let simpleMode = true;
+export function setMode(s) { simpleMode = s };
+let addComments = true;
+export function setAddComm(c) { addComments = c }
 const variables = {};
-let simpleMode = false;
+const strings = {};
+/** Number of if statements
+ *  @type {number} */
+let numStr = 0;
 /** Number of if statements
  *  @type {number} */
 export let ifNum = 0;
@@ -23,7 +30,9 @@ export function resetProg() {
     INSTRUCTIONS.length =
     errors.length =
     warnings.length =
-    ifNum = iterNum = 0;
+    ifNum = iterNum = numStr = 0;
+  for (var member in variables) delete variables[member];
+  for (var member in strings) delete strings[member];
 }
 // Enum Types
 const Types = {
@@ -78,7 +87,7 @@ class Value {
   }
 }
 const typeMap = {
-  db: "DB", var: "DB", dw: "DW", string: "DB"
+  db: "DB", var: "DW", int: "DW", dw: "DW", string: "DB"
 }
 const variableActions = {
   VariableStatement(typeName, varDeclaration) {
@@ -89,6 +98,7 @@ const variableActions = {
     // console.log(typeName.sourceString, i.identifier, i.initialiser);
     const dataDeclare = `${i.identifier} ${typeMap[typeName.sourceString]} ${i.initialiser}`;
     DATA_DECLARATIONS.push(dataDeclare);
+    INSTRUCTIONS.pop();
     console.log("Found var", Types[typeName.sourceString]);
     variables[i.identifier] = new Variable(Types[typeName.sourceString], i.initialiser);
   },
@@ -100,6 +110,7 @@ const variableActions = {
     return { identifier: identifier.sourceString, initialiser: init.children.length == 0 ? "?" : init.eval().join("") };
   },
   AssignmentExpression(lValue, assignmentOperator, assignRight) {
+    addComment(this.sourceString);
     useRegisters("AX", "BX");
     // INSTRUCTIONS.push("PUSH AX", "PUSH BX");
     const lvalue = lValue.eval();
@@ -119,9 +130,60 @@ const variableActions = {
       value = castVarTo(value, castToDW);
     }
     // console.log("rvalue", value);
+    const regLorX = lvalue.type == Types.db ? "L" : "X";
+    const aLorX = "A" + regLorX;
     switch (operator) {
       case "=":
+        checkCSorIP(lvalue.value + operator);
         INSTRUCTIONS.push(`POP ${lvalue}`);
+        break;
+      case "+=":
+        INSTRUCTIONS.push(
+          "POP AX",
+          `ADD ${lvalue}, ${aLorX}`
+        );
+        break;
+      case "-=":
+        INSTRUCTIONS.push(
+          "POP AX",
+          `SUB ${lvalue}, ${aLorX}`
+        );
+        break;
+      case "*=":
+        INSTRUCTIONS.push(
+          "MOV DX, 0",
+          "POP AX",
+          `IMUL ${lvalue}`,
+          `MOV ${lvalue}, ${aLorX}`
+        );
+        break;
+      case "/=":
+        INSTRUCTIONS.push(
+          "MOV DX, 0",
+          "POP AX",
+          `IDIV ${lvalue}`,
+          `MOV ${lvalue}, ${aLorX}`
+        );
+        break;
+      case "%=":
+        INSTRUCTIONS.push(
+          "MOV DX, 0",
+          "POP AX",
+          `IDIV ${lvalue}`,
+          `MOV ${lvalue}, D${regLorX}`
+        );
+        break;
+      case "|=":
+        INSTRUCTIONS.push(
+          "POP AX",
+          `OR ${lvalue}, ${aLorX}`,
+        );
+        break;
+      case "&=":
+        INSTRUCTIONS.push(
+          "POP AX",
+          `AND ${lvalue}, ${aLorX}`,
+        );
         break;
       default:
         INSTRUCTIONS.push(`POP ${lvalue}`);
@@ -139,7 +201,10 @@ const variableActions = {
     // INSTRUCTIONS
     return val;
   },
-  MovShortcut(lv, _, rv) {
+  //MovShortcut
+  ShortcutStatement(lv, shortcutOperator, rv) {
+    addComment(this.sourceString);
+    const operator = shortcutOperator.sourceString;
     const lvalue = lv.eval();
     let rvalue = rv.eval();
     console.log("lv", lvalue)
@@ -150,16 +215,47 @@ const variableActions = {
     if (c) {
       rvalue = castVarTo(rvalue, c);
     }
-    INSTRUCTIONS.push(`MOV ${lv.sourceString}, ${rvalue.value}`);
+    const regLorX = lvalue.type == Types.dw ? "AX" : "AL";
+    INSTRUCTIONS.pop();
+    switch (operator) {
+      case ":=":
+        INSTRUCTIONS.push(`MOV ${lv.sourceString}, ${rvalue.value}`);
+        break;
+      case "*:=":
+        INSTRUCTIONS.push(
+          `MOV ${regLorX}, ${lvalue.value}`,
+          `IMUL ${rvalue.value}`,
+          `MOV ${lvalue.value}, ${regLorX}`,
+        )
+        break;
+
+      default:
+        break;
+    }
+    // INSTRUCTIONS.push(`MOV ${lv.sourceString}, ${rvalue.value}`);
   },
   PrefixExpression(operator, lvalue) {
+    addComment(this.sourceString);
     const value = lvalue.eval();
     console.log(value);
     if (value.type == Types.ea) {
       throwError(`[At '${this.sourceString}'] ${lvalue.sourceString} is not a valid lvalue`);
       return;
     }
-    let command = operator.sourceString == "++" ? "INC" : "DEC";
+    let command// = operator.sourceString == "++" ? "INC" : "DEC";
+    switch (operator.sourceString) {
+      case "++":
+        command = "INC";
+        break;
+      case "--":
+        command = "DEC";
+        break;
+      case "!":
+        command = "NOT";
+        break;
+      default:
+        break;
+    }
     INSTRUCTIONS.push(command + " " + lvalue.sourceString);
   }
 }
@@ -216,6 +312,7 @@ function getUnaryExprCompiled(e, operator) {
   return value;
 }
 function getBinaryExprCompiled(a, b, operator) {
+  addComment(`${a.sourceString} ${operator} ${b.sourceString}`);
   /** @type {Value}*/
   const valueA = a.eval(); //PUSH a
   /** @type {Value} */
@@ -231,7 +328,7 @@ function getBinaryExprCompiled(a, b, operator) {
     throwError(`At '${valueA.value + operator}'] LValue ${valueA.value} is 8-bit and cannot be used.`);
   }
   const compiled = [
-    `; ${operator}`,
+    // `; ${operator}`,
     "POP BX",
     "POP AX",
   ]
@@ -293,11 +390,22 @@ const constantActions = {
     return new Value(Types.number, this.sourceString, getExprInstr(this));
   },
   stringLiteral(_, s, __) {
+    const src = s.sourceString;
+    // DATA_DECLARATIONS.push(`str${src} DB "${src}$"`)
     const str = `"${s.sourceString}$"`;
+    strings[src] = src;
     return new Value(Types.string, str, getExprInstr(str));
   },
   pStringLiteral(_, s, __) {
-    DATA_DECLARATIONS.push(`${s.sourceString} DB "${s.sourceString}$"`);
+    const src = s.sourceString;
+    if (!strings[src]) {
+      numStr++;
+      strings[src] = `str${numStr}`;
+      DATA_DECLARATIONS.push(`str${numStr} DB "${src}$"`);
+    }
+    const str = `"${src}$"`;
+    INSTRUCTIONS.push(`PUSH OFFSET ${strings[src]}`);
+    return new Value(Types.string, str, getExprInstr(str));
   },
   LValue(l) {
     // console.log(l.sourceString);
@@ -321,7 +429,6 @@ export const actions = {
   _terminal() {
     return this;
   },
-  ...constantActions,
   MasmOperation(m, _) {
     INSTRUCTIONS.push(m.sourceString);
     // m.eval();
@@ -336,6 +443,7 @@ export const actions = {
   EndStatement(_) {
     INSTRUCTIONS.push(".EXIT", "END");
   },
+  ...constantActions,
   ...variableActions,
   ...expressionActions,
   ...blockActions,
@@ -356,7 +464,8 @@ export function warn(e) {
  * @param  {...string} registers Registers which should be saved
  */
 export function useRegisters(...registers) {
-  registers.forEach(r => INSTRUCTIONS.push(`PUSH ${r}`))
+  if (!simpleMode)
+    registers.forEach(r => INSTRUCTIONS.push(`PUSH ${r}`))
 }
 /**
  * This will `POP` the registers
@@ -364,7 +473,8 @@ export function useRegisters(...registers) {
  * @param  {...string} registers Registers which should be restored
  */
 export function restoreRegisters(...registers) {
-  registers.forEach(r => INSTRUCTIONS.push(`POP ${r}`))
+  if (!simpleMode)
+    registers.forEach(r => INSTRUCTIONS.push(`POP ${r}`))
 }
 
 /**
@@ -382,20 +492,42 @@ function getExprInstr(node) {
  * @returns To which type rvalue should be casted to
  */
 function checkTypes(m, lv, rv, strict) {
-  // console.log("checking", lv, rv);
-  if (strict && (registerRegex.test(lv.value) || registerRegex.test(rv.value))) {
-    lv.type = "REG_" + lv.type;
-    rv.type = "REG_" + rv.type;
+  console.log("checking", lv, rv);
+  const origLV = lv.type;
+  const origRV = rv.type;
+  if (strict) {
+    // console.log("checking")
+    if (registerRegex.test(lv.value))
+      lv.type = "REG_" + lv.type;
+    if (registerRegex.test(rv.value))
+      rv.type = "REG_" + rv.type;
   }
   if (lv.type != rv.type) {
     if (lv.type == Types.dw || rv.type == Types.db) {
+      if (strict && (origLV != origRV)) {
+        warn(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
+      }
       return Types.dw;
     }
     if (lv.type == Types.all || rv.type == Types.all) {
+      let symbols = "";
+      let plural = false;
+      if (lv.type == Types.all) {
+        symbols += `'${lv.value}'`;
+      }
+      if (rv.type == Types.all) {
+        if (symbols != "") {
+          symbols += " and";
+          plural = true;
+        }
+        symbols += ` '${lv.value}'`;
+      }
+      warn(`${symbols} ha${plural ? "ve" : "s"} type "ALL", which is indeterminate and could lead to an Assembly error. Define the variables first.`)
       return Types.all;
     }
     // throwError(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
-    warn(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
+    if (origLV != origRV)
+      warn(`Incompatible types at '${m}' (${lv.type} and ${rv.type}): Unable to cast ${rv.type} to ${lv.type}`);
   }
 }
 function checkVar(name) {
@@ -430,9 +562,15 @@ function castVarTo(variable, typeToCastTo) {
  * @param {string} c Comment to add
  */
 export function addComment(c) {
-  //if comments_on
-  INSTRUCTIONS.push(";" + c);
+  if (addComments)
+    //if comments_on
+    INSTRUCTIONS.push(";" + c);
 }
-const decimalRegex = /[0-9]+/ig;
-const hexRegex = /[A-F0-9]+H/ig;
-const registerRegex = /ax|bx|cx|dx|al|bl|Cl|Dl|ah|bh|ch|dh|si|di|/g;
+function checkCSorIP(lvalue, message) {
+  if (lvalue.value == "CS" || lvalue.value == "IP") {
+    throwError(`[At '${message}']: ${lvalue} register's value cannot be set.`)
+  }
+}
+var decimalRegex = /[0-9]+/ig;
+var hexRegex = /[A-F0-9]+H/ig;
+var registerRegex = /ax|bx|cx|dx|al|bl|Cl|Dl|ah|bh|ch|dh|si|di/ig;

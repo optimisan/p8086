@@ -13,7 +13,7 @@ p8086 {
               //|EmptyStatement 
               ) ";" //IterationStmt | IfStatement | Continue, break, 
 
-  ShortcutStatement = MovShortcut
+  ShortcutStatement = LValue shortcutOperator (LValue | numberLiteral) //MovShortcut
   
   MovShortcut = LValue ":=" (LValue | numberLiteral)
 
@@ -106,7 +106,9 @@ p8086 {
 
   pStringLiteral = "\"" stringCharacter+ "\""
 
-  assignmentOperator = "="| "+=" | "-=" | "&=" | "|="
+  shortcutOperator = ":=" | "*:=" | "/:="
+
+  assignmentOperator = "="| "+=" | "-=" | "*=" | "/=" | "&=" | "|=" | "%="
 
   immediateValue = numberLiteral | characterLiteral
 
@@ -128,7 +130,7 @@ p8086 {
   singleLineComment = "//" (~lineTerminator any)* (lineTerminator | end)
   lineTerminator = "\n" | "\r"
 
-  typeName = db | dw | var | string
+  typeName = db | dw | var | string | int
 
   identifier (an identifier) = ~reservedWord identifierName
 
@@ -141,7 +143,7 @@ p8086 {
   effectiveAddress = numberLiteral | addressRegister
 
   reservedWord = db | dw | var | while | if | print
-                | return | else | continue | for | endP
+                | return | else | continue | for | endP | int
 
   db = "db" ~identifierPart
   // #Named as "endP" because "end" is a built-in rule in OHM
@@ -156,6 +158,7 @@ p8086 {
   continue = "continue" ~identifierPart
   for = "for" ~identifierPart
   var = "var" ~identifierPart
+  int = "int" ~identifierPart
   addressRegister = ("SI" | "DI" | "BX") ~identifierPart
   register = ("AX" | "BX" | "CX" | "DX" | "AL" | "AH" | "BH" | "BL" | "CL" | "CH" | "DL" | "DH" ) ~identifierPart
 
