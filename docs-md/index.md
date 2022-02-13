@@ -10,6 +10,25 @@ icon: home-fill
 
 Your code written in `p8086` will "compile" to standard 8086 instructions like `MOV` or `JMP`. You can then pass on this code to the assembler and see how it executes it calmly and precisely as you will hope.
 
+## Installation and usage
+
+You can use `p8086` online at [https://akshat-oke.github.io/p8086/src/](https://akshat-oke.github.io/p8086/src/)
+Alternatively, you can install `p8086` as a CLI through npm.
+
+```console
+$ npm i --global p8086
+```
+
+To compile your code saved at `pc\folder\code.p86`, `cd` into the folder and run:
+
+```console
+pc\folder> p8086 code.p86
+```
+
+This will write the compiled code to `pc\folder\code.asm`.
+
+> Don't use .asm as an extension for your source code file since it will be overwritten by the compiler.
+
 ## Example
 
 Here is a quick example of a code in `p8086` to determine whether a number is even or odd.
@@ -76,7 +95,7 @@ Do tell me if there is a simpler way of doing this!
 > Any valid 8086 instruction is also a valid `p8086` instruction!
 > This means you can use `p8086` for just a small part of your original 8086 program, or vice versa!
 
-## Usage
+## Options
 
 To use `p8086` simply head on to [the online compiler](https://akshat-oke.github.io/p8086/src) and start coding right away!
 There are two options:

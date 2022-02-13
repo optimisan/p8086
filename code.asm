@@ -1,0 +1,37 @@
+.MODEL SMALL
+.STACK 200H
+.DATA
+num DW 24
+str1 DB "Even$"
+str2 DB "Odd$".CODE
+;if (num%2 == 0)
+;num%2 == 0
+;num % 2
+PUSH num
+PUSH 2
+POP BX
+POP AX
+PUSH DX
+MOV DX, 0
+DIV BX
+MOV AX, DX
+POP DX
+PUSH AX
+PUSH 0
+POP AX
+POP BX
+CMP BX, AX
+JNZ ifElse1
+PUSH OFFSET str1
+POP DX
+MOV AH, 09
+INT 21H
+JMP ifElse1out
+ifElse1:
+PUSH OFFSET str2
+POP DX
+MOV AH, 09
+INT 21H
+ifElse1out:
+.EXIT
+END

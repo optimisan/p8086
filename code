@@ -1,0 +1,9 @@
+/* A sample program in p8086
+*/
+dw num = 24; //input
+if(num%2 == 0){
+  print "Even"; // very simple
+} else {
+  print "Odd";
+}
+end; // see 'Statements' for more info

@@ -26,12 +26,12 @@
     <script>(function () { var el = document.documentElement, m = localStorage.getItem("/p8086/docs/doc_theme"), wm = window.matchMedia; if (m === "dark" || (!m && wm && wm("(prefers-color-scheme: dark)").matches)) { el.classList.add("dark") } else { el.classList.remove("dark") } })();</script>
 
     <link href="/p8086/docs/favicon.ico" rel="icon" />
-    <link href="/p8086/docs/resources/css/retype.css?v=1.11.2.697983826624" rel="stylesheet" data-turbo-track="reload" />
+    <link href="/p8086/docs/resources/css/retype.css?v=1.11.2.698064718728" rel="stylesheet" data-turbo-track="reload" />
 
-    <script type="text/javascript" src="/p8086/docs/resources/js/config.js?v=1.11.2.697983826624" defer data-turbo-track="reload"></script>
+    <script type="text/javascript" src="/p8086/docs/resources/js/config.js?v=1.11.2.698064718728" defer data-turbo-track="reload"></script>
     <script type="text/javascript" src="/p8086/docs/resources/js/retype.js?v=1.11.2" defer data-turbo-track="reload"></script>
-    <script id="lunr-js" type="text/javascript" src="/p8086/docs/resources/js/lunr.js?v=1.11.2.697983826624" defer></script>
-    <script id="prism-js" type="text/javascript" src="/p8086/docs/resources/js/prism.js?v=1.11.2.697983826624" defer></script>
+    <script id="lunr-js" type="text/javascript" src="/p8086/docs/resources/js/lunr.js?v=1.11.2.698064718728" defer></script>
+    <script id="prism-js" type="text/javascript" src="/p8086/docs/resources/js/prism.js?v=1.11.2.698064718728" defer></script>
 </head>
     <body>
         <div id="docs-app" class="relative text-base antialiased text-gray-700 bg-white font-body dark:bg-dark-850 dark:text-dark-300">
@@ -217,6 +217,25 @@
     </h2>
 </doc-anchor-target>
 <p>Your code written in <code v-pre>p8086</code> will &quot;compile&quot; to standard 8086 instructions like <code v-pre>MOV</code> or <code v-pre>JMP</code>. You can then pass on this code to the assembler and see how it executes it calmly and precisely as you will hope.</p>
+<doc-anchor-target id="installation-and-usage">
+    <h2>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#installation-and-usage">#</doc-anchor-trigger>
+        <span>Installation and usage</span>
+    </h2>
+</doc-anchor-target>
+<p>You can use <code v-pre>p8086</code> online at <a href="https://akshat-oke.github.io/p8086/src/">https://akshat-oke.github.io/p8086/src/</a>
+Alternatively, you can install <code v-pre>p8086</code> as a CLI through npm.</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-shell-session"><code v-pre class="language-shell-session">$ npm i --global p8086</code></pre>
+</doc-codeblock></div>
+<p>To compile your code saved at <code v-pre>pc\folder\code.p86</code>, <code v-pre>cd</code> into the folder and run:</p>
+<div class="codeblock-wrapper"><doc-codeblock>
+<pre class="language-shell-session"><code v-pre class="language-shell-session">pc\folder&gt; p8086 code.p86</code></pre>
+</doc-codeblock></div>
+<p>This will write the compiled code to <code v-pre>pc\folder\code.asm</code>.</p>
+<blockquote>
+<p>Don&#x27;t use .asm as an extension for your source code file since it will be overwritten by the compiler.</p>
+</blockquote>
 <doc-anchor-target id="example">
     <h2>
         <doc-anchor-trigger class="header-anchor-trigger" to="#example">#</doc-anchor-trigger>
@@ -285,10 +304,10 @@ END</code></pre>
 <p>Any valid 8086 instruction is also a valid <code v-pre>p8086</code> instruction!
 This means you can use <code v-pre>p8086</code> for just a small part of your original 8086 program, or vice versa!</p>
 </blockquote>
-<doc-anchor-target id="usage">
+<doc-anchor-target id="options">
     <h2>
-        <doc-anchor-trigger class="header-anchor-trigger" to="#usage">#</doc-anchor-trigger>
-        <span>Usage</span>
+        <doc-anchor-trigger class="header-anchor-trigger" to="#options">#</doc-anchor-trigger>
+        <span>Options</span>
     </h2>
 </doc-anchor-target>
 <p>To use <code v-pre>p8086</code> simply head on to <a href="https://akshat-oke.github.io/p8086/src">the online compiler</a> and start coding right away!

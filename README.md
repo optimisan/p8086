@@ -10,6 +10,25 @@ icon: home-fill
 
 Your code written in `p8086` will "compile" to standard 8086 instructions like `MOV` or `JMP`. You can then pass on this code to the assembler and see how it executes it calmly and precisely as you will hope.
 
+## Installation and usage
+
+You can use `p8086` online at [https://akshat-oke.github.io/p8086/src/](https://akshat-oke.github.io/p8086/src/)
+Alternatively, you can install `p8086` as a CLI through npm.
+
+```console
+$ npm i --global p8086
+```
+
+To compile your code saved at `pc\folder\code.p86`, `cd` into the folder and run:
+
+```console
+pc\folder> p8086 code.p86
+```
+
+This will write the compiled code to `pc\folder\code.asm`.
+
+> Don't use .asm as an extension for your source code file since it will be overwritten by the compiler.
+
 ## Example
 
 Here is a quick example of a code in `p8086` to determine whether a number is even or odd.
@@ -30,33 +49,40 @@ This code will compile to the following 8086 Assembly Language:
 
 ```nasm # Compiled code
 .MODEL SMALL
-.STACK 500H
+.STACK 200H
 .DATA
-num DB 24
-strEven DB "Even$"
-strOdd DB "Odd$"
-.CODE
+num DW 24
+str1 DB "Even$"
+str2 DB "Odd$".CODE
+;if (num%2 == 0)
+;num%2 == 0
+;num % 2
+PUSH num
+PUSH 2
+POP BX
+POP AX
+PUSH DX
+MOV DX, 0
+DIV BX
+MOV AX, DX
+POP DX
 PUSH AX
-DIV NUM
-CMP AH, 00
-JNZ IF1_else
-  PUSH DX
-  PUSH AX
-  MOV DX, OFFSET strEven
-  MOV AH, 09
-  INT 21H
-  POP AX
-  POP DX
-  JMP IF1_out
-IF1_else:
-  PUSH DX
-  PUSH AX
-  MOV DX, OFFSET strOdd
-  MOV AH, 09
-  INT 21H
-  POP AX
-  POP DX
-IF1_out:
+PUSH 0
+POP AX
+POP BX
+CMP BX, AX
+JNZ ifElse1
+PUSH OFFSET str1
+POP DX
+MOV AH, 09
+INT 21H
+JMP ifElse1out
+ifElse1:
+PUSH OFFSET str2
+POP DX
+MOV AH, 09
+INT 21H
+ifElse1out:
 .EXIT
 END
 ```
